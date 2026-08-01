@@ -1,0 +1,30 @@
+# secrets
+.env
+.env.*
+!.env.example
+*.pem
+kaggle.json
+
+# Claude Code / superpowers internals
+.claude/settings.local.json
+.claude/plans/
+.claude/journal/
+.superpowers/
+CLAUDE.local.md
+
+# Python
+__pycache__/
+*.pyc
+.venv/
+venv/
+*.egg-info/
+
+# data / model artifacts too large for git
+*.faiss
+*.index
+data/raw/
+models/
+.ipynb_checkpoints/
+
+# OS
+.DS_Store
