@@ -5,32 +5,28 @@ import pandas as pd
 from rich.console import Console
 from rich.table import Table
 
-from ecomsearch.config import CATALOG_PATH, DEFAULT_TOP_K, INDEX_PATH, ITEM_IDS_PATH
-from ecomsearch.embeddings import Embedder
-from ecomsearch.index import ProductIndex
+from ecomsearch.config import CATALOG_PATH, DEFAULT_TOP_K
+from ecomsearch.search import bm25_search, dense_search, hybrid_search
 
 
-def load_index() -> ProductIndex:
-    if not INDEX_PATH.exists() or not ITEM_IDS_PATH.exists():
-        raise SystemExit(
-            f"No index found at {INDEX_PATH}. "
-            "Run `python scripts/build_index.py` first to build it."
-        )
-    return ProductIndex.load(INDEX_PATH, ITEM_IDS_PATH)
-
-
-def search(query: str, top_k: int) -> None:
-    index = load_index()
-    embedder = Embedder()
-    query_vector = embedder.embed_query(query)
-    results = index.search(query_vector, top_k)
+def search(query: str, top_k: int, mode: str) -> None:
+    if mode == "dense":
+        results = dense_search(query, top_k)
+    elif mode == "bm25":
+        results = bm25_search(query, top_k)
+    elif mode == "hybrid":
+        results = hybrid_search(query, top_k, use_rerank=False)
+    elif mode == "hybrid-rerank":
+        results = hybrid_search(query, top_k, use_rerank=True)
+    else:
+        raise SystemExit(f"Unknown mode: {mode}")
 
     catalog = pd.read_csv(
         CATALOG_PATH,
         usecols=["item_id", "name", "brand", "category_path"],
     ).set_index("item_id")
 
-    table = Table(title=f'Top {len(results)} results for "{query}"')
+    table = Table(title=f'Top {len(results)} results for "{query}" (mode={mode})')
     table.add_column("Rank", justify="right")
     table.add_column("Score", justify="right")
     table.add_column("Item ID", justify="right")
@@ -61,11 +57,17 @@ def main() -> None:
     search_parser.add_argument(
         "--top-k", type=int, default=DEFAULT_TOP_K, help="Number of results to return"
     )
+    search_parser.add_argument(
+        "--mode",
+        choices=["dense", "bm25", "hybrid", "hybrid-rerank"],
+        default="hybrid-rerank",
+        help="Retrieval mode",
+    )
 
     args = parser.parse_args()
 
     if args.command == "search":
-        search(args.query, args.top_k)
+        search(args.query, args.top_k, args.mode)
 
 
 if __name__ == "__main__":
