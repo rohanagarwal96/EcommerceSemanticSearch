@@ -20,3 +20,7 @@ RERANKER_MODEL_NAME = "cross-encoder/ms-marco-MiniLM-L-6-v2"
 RRF_K = 60
 CANDIDATE_POOL_SIZE = 100
 RERANK_POOL_SIZE = 50
+
+EVAL_QUERIES_PATH = REPO_ROOT / "eval" / "eval_queries.json"
+EVAL_RESULTS_PATH = REPO_ROOT / "docs" / "eval_results.md"
+EVAL_TOP_K = 10
