@@ -21,9 +21,15 @@ catalog. The README must state this separation plainly.
 - **License: MIT**, confirmed directly via `kaggle datasets metadata`
   (not inferred from the Kaggle web page, which is JS-rendered and doesn't
   expose license text to a simple fetch).
-- 44,671 fashion products, each with a small thumbnail image (~3-15KB
-  JPEG) plus real text: a `display name` (short, caption-style — e.g.
-  "Puma Men Black 65CC Lo Ducati Sports Shoes"), a longer marketing
+- 44,441 fashion products (corrected from an initial 44,671 estimate made
+  during brainstorming, before download — that figure came from `wc -l`
+  on `data.csv`, which overcounts because ~230 quoted `description`
+  fields contain embedded newlines; the true row count, confirmed via
+  proper CSV parsing after downloading in Task 6, is 44,441, with a
+  perfect 1:1 match to 44,441 image files), each with a small thumbnail
+  image (~3-15KB JPEG) plus real text: a `display name` (short,
+  caption-style — e.g. "Puma Men Black 65CC Lo Ducati Sports Shoes"), a
+  longer marketing
   `description`, and a `category` label.
 - ~362MB total download — the smallest of the viable candidates
   considered (others: `paramaggarwal/fashion-product-images-small`, MIT,
@@ -39,7 +45,7 @@ Source and license (MIT, dataset owner `nirmalsankalana`) must be
 documented in the README alongside the Phase 1 disclosure that this is a
 separate dataset from the main catalog.
 
-## Scope: 5,000-image subset, not the full 44,671
+## Scope: 5,000-image subset, not the full 44,441
 
 Per the Phase 1 lesson (the dev machine's CPU, an Intel i7-8650U 15W
 laptop chip, is weak — a full bge-base-en-v1.5 embed run projected to
@@ -115,7 +121,7 @@ embedding space by construction — no prefix is applied to query text.
    - Saves the index + item-id mapping to `artifacts/multimodal/`, plus
      `subset_metadata.csv` (the sampled 5,000 rows' display name,
      category, image path) so the CLI never needs to load the full
-     44,671-row source CSV at query time.
+     44,441-row source CSV at query time.
 3. `ecomsearch-images search "<query>"`:
    - `ClipEmbedder.embed_text([query])` — no prefix.
    - Loads the index, searches top-k, joins against `subset_metadata.csv`.
@@ -167,7 +173,7 @@ messages, no raw stack traces, for each foreseeable failure:
 
 ## Out of scope for Phase 2 (later phases / explicitly deferred)
 
-- Embedding the full 44,671-item dataset (documented as a future option,
+- Embedding the full 44,441-item dataset (documented as a future option,
   not a Phase 2 requirement).
 - Any integration between the multimodal module and the main
   `ecomsearch` catalog CLI or FastAPI backend — Phase 2 is a standalone
