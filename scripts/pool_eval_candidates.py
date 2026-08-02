@@ -13,6 +13,12 @@ import pandas as pd
 from ecomsearch.config import CATALOG_PATH
 from ecomsearch.search import bm25_search, dense_search, hybrid_search
 
+# Catalog descriptions contain Unicode characters (curly quotes, "≈", etc.)
+# that Windows' default console/redirect encoding (cp1252) can't represent,
+# which otherwise crashes mid-run with UnicodeEncodeError. Force UTF-8 with
+# a safe fallback so no valid catalog text can ever crash this script.
+sys.stdout.reconfigure(encoding="utf-8", errors="replace")
+
 MODES = {
     "dense": lambda query: dense_search(query, 10),
     "bm25": lambda query: bm25_search(query, 10),
