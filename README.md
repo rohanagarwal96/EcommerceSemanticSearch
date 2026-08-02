@@ -6,13 +6,14 @@ targeting sub-200ms latency, deployed live at $0 infrastructure cost.
 
 ## Status
 
-Phases 1-2 complete — a working semantic search CLI over the full catalog,
-plus a cross-modal (text-to-image) search demo. Phases 3-8 in progress;
-this section will be updated as each phase lands.
+Phases 1-3 complete — a working semantic search CLI (dense, BM25 keyword,
+and hybrid+reranked modes) over the full catalog, plus a cross-modal
+(text-to-image) search demo. Phases 4-8 in progress; this section will be
+updated as each phase lands.
 
 - [x] Phase 1 — Text embedding baseline (FAISS + bge-small-en-v1.5)
 - [x] Phase 2 — Multimodal (CLIP) module
-- [ ] Phase 3 — Hybrid retrieval + reranking
+- [x] Phase 3 — Hybrid retrieval + reranking
 - [ ] Phase 4 — Evaluation and latency engineering
 - [ ] Phase 5 — Serving layer (FastAPI + Streamlit)
 - [ ] Phase 6 — Deployment (Qdrant Cloud + Hugging Face Spaces)
@@ -67,11 +68,21 @@ faster — likely under 30 minutes — on a typical desktop or server CPU):
 python scripts/build_index.py
 ```
 
-Then search:
+Build the BM25 keyword index once (fast — pure term-frequency counting,
+no neural network, typically well under a minute):
 
 ```bash
-ecomsearch search "organic almond milk" --top-k 5
+python scripts/build_bm25_index.py
 ```
+
+Then choose a retrieval mode:
+
+```bash
+ecomsearch search "organic almond milk" --top-k 5 --mode hybrid-rerank
+```
+
+`--mode` accepts `dense`, `bm25`, `hybrid`, or `hybrid-rerank` (the
+default) — useful for comparing retrieval strategies.
 
 ### Multimodal (CLIP) demo
 
