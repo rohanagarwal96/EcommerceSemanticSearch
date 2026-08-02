@@ -9,7 +9,7 @@ ARTIFACTS_DIR = REPO_ROOT / "artifacts"
 INDEX_PATH = ARTIFACTS_DIR / "catalog.faiss"
 ITEM_IDS_PATH = ARTIFACTS_DIR / "item_ids.npy"
 
-MODEL_NAME = "BAAI/bge-base-en-v1.5"
+MODEL_NAME = "BAAI/bge-small-en-v1.5"
 MAX_TOKENS = 512
 QUERY_PREFIX = "Represent this sentence for searching relevant passages: "
 DEFAULT_TOP_K = 10
