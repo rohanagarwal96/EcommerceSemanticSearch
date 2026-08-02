@@ -6,10 +6,10 @@ targeting sub-200ms latency, deployed live at $0 infrastructure cost.
 
 ## Status
 
-Project scaffolding only — no application code yet. Build phases in
-progress; this section will be updated as each phase lands.
+Phase 1 complete — a working semantic search CLI over the full catalog.
+Phases 2-8 in progress; this section will be updated as each phase lands.
 
-- [ ] Phase 1 — Text embedding baseline (FAISS + bge-base-en-v1.5)
+- [x] Phase 1 — Text embedding baseline (FAISS + bge-small-en-v1.5)
 - [ ] Phase 2 — Multimodal (CLIP) module
 - [ ] Phase 3 — Hybrid retrieval + reranking
 - [ ] Phase 4 — Evaluation and latency engineering
@@ -32,7 +32,7 @@ added here once that dataset is selected.
 
 | Layer | Choice |
 |---|---|
-| Text embeddings | `BAAI/bge-base-en-v1.5` |
+| Text embeddings | `BAAI/bge-small-en-v1.5` |
 | Image embeddings | `openai/clip-vit-base-patch32` |
 | Vector index (dev) | FAISS |
 | Vector index (deployed) | Qdrant Cloud (free tier) |
@@ -45,8 +45,26 @@ added here once that dataset is selected.
 
 ## Setup
 
-Setup instructions will be added as the environment and dependencies are
-introduced in each phase.
+```bash
+python -m venv venv
+source venv/Scripts/activate   # on Linux/Mac: source venv/bin/activate
+pip install -r requirements.txt
+pip install -e .
+```
+
+Build the search index once (embeds all 55,516 products; took a few
+hours on a low-power laptop CPU in development, but should be much
+faster — likely under 30 minutes — on a typical desktop or server CPU):
+
+```bash
+python scripts/build_index.py
+```
+
+Then search:
+
+```bash
+ecomsearch search "organic almond milk" --top-k 5
+```
 
 ## Known limitations
 
