@@ -133,3 +133,37 @@ message (no raw stack traces):
   default above (Phase 4)
 - FastAPI/Streamlit serving layer (Phase 5)
 - Qdrant Cloud deployment (Phase 6)
+
+## Amendment (during Task 6 execution): switched to `bge-small-en-v1.5`
+
+Tasks 1-5 were implemented and reviewed against `BAAI/bge-base-en-v1.5` as
+originally specified above. During Task 6 (the full 55,516-row batch
+embed), that model proved impractical on the development machine's CPU
+(Intel i7-8650U, a 15W 4-core/8-thread laptop chip): a live progress check
+via `py-spy` at the 2h54m mark showed only 11,456/55,516 rows (20.6%)
+complete, projecting a ~14 hour total run. `torch` threading (4 threads,
+matching physical cores) and the BLAS backend (MKL + oneDNN, AVX2) were
+confirmed correctly configured — the bottleneck is the hardware itself,
+not misconfiguration, so there was no quick fix available at the
+`bge-base-en-v1.5` model size.
+
+**Decision:** switch `MODEL_NAME` in `src/ecomsearch/config.py` to
+`BAAI/bge-small-en-v1.5` (~33M params vs. base's ~110M, same bge family
+and query-prefix convention, 384-dim output instead of 768-dim). This is
+expected to cut CPU inference cost roughly 3x, bringing the full-catalog
+embed into a practical range on this hardware, at a modest, well-known
+retrieval-quality tradeoff versus the base model (small underperforms
+base by a few points on standard embedding benchmarks, but remains a
+strong general-purpose text embedding model).
+
+**Consequences:**
+- `src/ecomsearch/config.py`'s `MODEL_NAME` constant is the single source
+  of truth for which model is used; `embeddings.py`, `build_index.py`,
+  and `cli.py` all reference it indirectly and needed no code changes.
+- Tasks 3-5's tests were written generically (no hardcoded model name or
+  embedding dimension) and continue to pass unchanged against the new
+  model.
+- The FAISS index dimension is inferred from the embedding output shape
+  at build time, so `index.py` needed no changes either.
+- Any future comparison/eval work (Phase 4) should note results reflect
+  `bge-small-en-v1.5`, not `bge-base-en-v1.5` as originally scoped here.
