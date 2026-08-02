@@ -18,3 +18,10 @@ def clip_embedder():
     from ecomsearch.multimodal.clip_embedder import ClipEmbedder
 
     return ClipEmbedder()
+
+
+@pytest.fixture(scope="session")
+def cross_encoder():
+    from ecomsearch.reranker import CrossEncoderReranker
+
+    return CrossEncoderReranker()
