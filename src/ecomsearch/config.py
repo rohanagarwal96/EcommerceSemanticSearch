@@ -24,3 +24,8 @@ RERANK_POOL_SIZE = 50
 EVAL_QUERIES_PATH = REPO_ROOT / "eval" / "eval_queries.json"
 EVAL_RESULTS_PATH = REPO_ROOT / "docs" / "eval_results.md"
 EVAL_TOP_K = 10
+
+LATENCY_RESULTS_PATH = REPO_ROOT / "docs" / "latency_results.md"
+LATENCY_TARGET_MS_P95 = 200.0
+BENCHMARK_REPEAT_COUNT = 10
+BENCHMARK_SEED = 42
