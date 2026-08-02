@@ -8,8 +8,9 @@ targeting sub-200ms latency, deployed live at $0 infrastructure cost.
 
 Phases 1-3 complete — a working semantic search CLI (dense, BM25 keyword,
 and hybrid+reranked modes) over the full catalog, plus a cross-modal
-(text-to-image) search demo. Phases 4-8 in progress; this section will be
-updated as each phase lands.
+(text-to-image) search demo. Retrieval quality has been evaluated across
+all 4 modes — see [Evaluation Results](docs/eval_results.md). Phases 4-8
+in progress; this section will be updated as each phase lands.
 
 - [x] Phase 1 — Text embedding baseline (FAISS + bge-small-en-v1.5)
 - [x] Phase 2 — Multimodal (CLIP) module
@@ -50,6 +51,19 @@ else in this project.
 | Frontend | Streamlit (Docker) |
 | Hosting | Hugging Face Spaces (free) |
 | CI/CD | GitHub Actions |
+
+## Evaluation
+
+Retrieval quality was measured across all 4 modes on 35 hand-labeled
+queries (binary relevance, pooled candidates). Full methodology in
+[docs/eval_results.md](docs/eval_results.md).
+
+| Mode | Recall@10 | NDCG@10 | MRR |
+|---|---|---|---|
+| dense | 0.4441 | 0.9145 | 0.9486 |
+| bm25 | 0.4120 | 0.8967 | 0.9429 |
+| hybrid | 0.4437 | 0.9360 | 0.9857 |
+| hybrid-rerank | 0.4285 | 0.9125 | 0.9357 |
 
 ## Setup
 
