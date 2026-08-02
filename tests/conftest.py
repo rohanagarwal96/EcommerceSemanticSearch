@@ -11,3 +11,10 @@ def embedder():
     from ecomsearch.embeddings import Embedder
 
     return Embedder()
+
+
+@pytest.fixture(scope="session")
+def clip_embedder():
+    from ecomsearch.multimodal.clip_embedder import ClipEmbedder
+
+    return ClipEmbedder()
