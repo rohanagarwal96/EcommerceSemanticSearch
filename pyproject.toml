@@ -9,6 +9,7 @@ requires-python = ">=3.10"
 
 [project.scripts]
 ecomsearch = "ecomsearch.cli:main"
+ecomsearch-images = "ecomsearch.multimodal.cli:main"
 
 [tool.setuptools.packages.find]
 where = ["src"]

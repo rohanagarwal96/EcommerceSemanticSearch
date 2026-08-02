@@ -23,6 +23,8 @@ venv/
 *.faiss
 *.index
 artifacts/
+data/multimodal/
+demo_results/
 data/raw/
 models/
 .ipynb_checkpoints/
