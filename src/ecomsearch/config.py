@@ -13,3 +13,10 @@ MODEL_NAME = "BAAI/bge-small-en-v1.5"
 MAX_TOKENS = 512
 QUERY_PREFIX = "Represent this sentence for searching relevant passages: "
 DEFAULT_TOP_K = 10
+
+BM25_INDEX_PATH = ARTIFACTS_DIR / "bm25.pkl"
+
+RERANKER_MODEL_NAME = "cross-encoder/ms-marco-MiniLM-L-6-v2"
+RRF_K = 60
+CANDIDATE_POOL_SIZE = 100
+RERANK_POOL_SIZE = 50
