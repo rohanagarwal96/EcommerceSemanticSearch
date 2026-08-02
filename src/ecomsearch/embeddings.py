@@ -1,4 +1,4 @@
-"""Text embedding utilities wrapping BAAI/bge-base-en-v1.5."""
+"""Text embedding utilities wrapping the configured bge sentence-transformers model."""
 from sentence_transformers import SentenceTransformer
 import numpy as np
 
