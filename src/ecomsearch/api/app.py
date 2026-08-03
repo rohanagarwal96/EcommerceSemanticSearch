@@ -3,6 +3,7 @@ from contextlib import asynccontextmanager
 
 from fastapi import FastAPI
 
+from ecomsearch.api.routes_image import router as image_router
 from ecomsearch.api.routes_text import router as text_router
 from ecomsearch.multimodal.search import image_search
 from ecomsearch.search import bm25_search, dense_search, hybrid_search
@@ -23,6 +24,7 @@ async def lifespan(app: FastAPI):
 
 app = FastAPI(title="E-Commerce Semantic Search API", lifespan=lifespan)
 app.include_router(text_router)
+app.include_router(image_router)
 
 
 @app.get("/health")
