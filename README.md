@@ -15,11 +15,7 @@ in progress; this section will be updated as each phase lands.
 - [x] Phase 1 — Text embedding baseline (FAISS + bge-small-en-v1.5)
 - [x] Phase 2 — Multimodal (CLIP) module
 - [x] Phase 3 — Hybrid retrieval + reranking
-- [ ] Phase 4 — Evaluation and latency engineering (in progress: Phase 4a's
-      eval run showed `search.py` was reloading the FAISS/BM25 indexes and
-      re-instantiating the embedder/reranker on every call, costing ~7s/call
-      on average; `search.py` now caches all of these per-process so each
-      loads at most once)
+- [ ] Phase 4 — Evaluation and latency engineering
 - [ ] Phase 5 — Serving layer (FastAPI + Streamlit)
 - [ ] Phase 6 — Deployment (Qdrant Cloud + Hugging Face Spaces)
 - [ ] Phase 7 — Production hygiene (CI, logging, rate limiting)
