@@ -3,6 +3,12 @@ in a warm, cached process, and write results to docs/latency_results.md.
 
 Usage:
     python scripts/benchmark_latency.py
+
+Warning: this script overwrites docs/latency_results.md entirely, including
+the hand-written "what was tried" investigation narrative added after the
+Phase 4b tuning work. Re-running it will regenerate the Methodology/Results
+sections but silently delete that narrative -- copy it out first if you
+want to keep it.
 """
 import json
 import random
