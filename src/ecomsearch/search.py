@@ -1,4 +1,6 @@
 """Retrieval orchestration: dense, keyword (BM25), and hybrid (RRF + rerank) search."""
+from concurrent.futures import ThreadPoolExecutor
+
 import pandas as pd
 
 from ecomsearch.bm25 import BM25Index
@@ -20,6 +22,7 @@ _bm25_index = None
 _embedder = None
 _reranker = None
 _catalog = None
+_search_executor = None
 
 
 def load_dense_index() -> ProductIndex:
@@ -68,6 +71,13 @@ def _get_reranker() -> CrossEncoderReranker:
     return _reranker
 
 
+def _get_search_executor() -> ThreadPoolExecutor:
+    global _search_executor
+    if _search_executor is None:
+        _search_executor = ThreadPoolExecutor(max_workers=2)
+    return _search_executor
+
+
 def _get_catalog() -> pd.DataFrame:
     global _catalog
     if _catalog is None:
@@ -90,8 +100,11 @@ def bm25_search(query: str, top_k: int) -> list[tuple[int, float]]:
 
 
 def hybrid_search(query: str, top_k: int, use_rerank: bool = True) -> list[tuple[int, float]]:
-    dense_results = dense_search(query, CANDIDATE_POOL_SIZE)
-    bm25_results = bm25_search(query, CANDIDATE_POOL_SIZE)
+    executor = _get_search_executor()
+    dense_future = executor.submit(dense_search, query, CANDIDATE_POOL_SIZE)
+    bm25_future = executor.submit(bm25_search, query, CANDIDATE_POOL_SIZE)
+    dense_results = dense_future.result()
+    bm25_results = bm25_future.result()
 
     dense_ids = [item_id for item_id, _ in dense_results]
     bm25_ids = [item_id for item_id, _ in bm25_results]
