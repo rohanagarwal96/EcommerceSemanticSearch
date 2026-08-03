@@ -48,4 +48,6 @@ def get_image(item_id: int) -> FileResponse:
 
     image_filename = metadata.loc[item_id, "image"]
     image_path = DATASET_IMAGES_DIR / image_filename
+    if not image_path.exists():
+        raise HTTPException(status_code=404, detail=f"Image file missing for item_id {item_id}")
     return FileResponse(image_path)

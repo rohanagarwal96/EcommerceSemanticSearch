@@ -58,3 +58,22 @@ def test_get_image_returns_file_for_known_item(monkeypatch, tmp_path):
 
     assert response.status_code == 200
     assert response.content == b"\xff\xd8\xff\xe0fake-jpeg-bytes"
+
+
+def test_get_image_returns_404_when_file_missing_from_disk(monkeypatch, tmp_path):
+    image_dir = tmp_path / "images"
+    image_dir.mkdir()
+    # Deliberately do NOT create 501.jpg -- metadata references it, but it's not on disk.
+
+    metadata_path = tmp_path / "subset_metadata.csv"
+    pd.DataFrame(
+        [[501, "Red Bicycle", "Sporting Goods", "501.jpg"]], columns=METADATA_COLUMNS
+    ).to_csv(metadata_path, index=False)
+    monkeypatch.setattr(routes_image, "SUBSET_METADATA_PATH", metadata_path)
+    monkeypatch.setattr(routes_image, "_metadata", None, raising=False)
+    monkeypatch.setattr(routes_image, "DATASET_IMAGES_DIR", image_dir)
+
+    client = TestClient(app)
+    response = client.get("/images/501")
+
+    assert response.status_code == 404
