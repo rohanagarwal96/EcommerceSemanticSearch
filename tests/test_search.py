@@ -5,6 +5,8 @@ import pytest
 from ecomsearch import search
 from ecomsearch.bm25 import BM25Index
 from ecomsearch.index import ProductIndex
+from ecomsearch.embeddings import Embedder
+from ecomsearch.reranker import CrossEncoderReranker
 
 
 @pytest.fixture
@@ -76,3 +78,84 @@ def test_bm25_search_exits_with_clear_message_when_index_missing(tmp_path, monke
         search.bm25_search("anything", top_k=1)
 
     assert "build_bm25_index.py" in str(excinfo.value)
+
+
+@pytest.fixture(autouse=True)
+def reset_search_caches(monkeypatch):
+    monkeypatch.setattr(search, "_dense_index", None, raising=False)
+    monkeypatch.setattr(search, "_bm25_index", None, raising=False)
+    monkeypatch.setattr(search, "_embedder", None, raising=False)
+    monkeypatch.setattr(search, "_reranker", None, raising=False)
+    monkeypatch.setattr(search, "_catalog", None, raising=False)
+
+
+def test_dense_search_loads_index_and_embedder_only_once_across_calls(
+    synthetic_catalog, monkeypatch
+):
+    load_calls = []
+    original_load = ProductIndex.load.__func__
+
+    def counting_load(cls, *args, **kwargs):
+        load_calls.append(1)
+        return original_load(cls, *args, **kwargs)
+
+    monkeypatch.setattr(ProductIndex, "load", classmethod(counting_load))
+
+    init_calls = []
+    original_init = Embedder.__init__
+
+    def counting_init(self, *args, **kwargs):
+        init_calls.append(1)
+        original_init(self, *args, **kwargs)
+
+    monkeypatch.setattr(Embedder, "__init__", counting_init)
+
+    search.dense_search("almond milk", top_k=1)
+    search.dense_search("paper towels", top_k=1)
+
+    assert len(load_calls) == 1
+    assert len(init_calls) == 1
+
+
+def test_bm25_search_loads_index_only_once_across_calls(synthetic_catalog, monkeypatch):
+    load_calls = []
+    original_load = BM25Index.load.__func__
+
+    def counting_load(cls, *args, **kwargs):
+        load_calls.append(1)
+        return original_load(cls, *args, **kwargs)
+
+    monkeypatch.setattr(BM25Index, "load", classmethod(counting_load))
+
+    search.bm25_search("almond milk", top_k=1)
+    search.bm25_search("paper towels", top_k=1)
+
+    assert len(load_calls) == 1
+
+
+def test_hybrid_search_with_rerank_loads_reranker_and_catalog_only_once_across_calls(
+    synthetic_catalog, monkeypatch
+):
+    init_calls = []
+    original_init = CrossEncoderReranker.__init__
+
+    def counting_init(self, *args, **kwargs):
+        init_calls.append(1)
+        original_init(self, *args, **kwargs)
+
+    monkeypatch.setattr(CrossEncoderReranker, "__init__", counting_init)
+
+    read_csv_calls = []
+    original_read_csv = search.pd.read_csv
+
+    def counting_read_csv(*args, **kwargs):
+        read_csv_calls.append(1)
+        return original_read_csv(*args, **kwargs)
+
+    monkeypatch.setattr(search.pd, "read_csv", counting_read_csv)
+
+    search.hybrid_search("almond milk", top_k=1, use_rerank=True)
+    search.hybrid_search("paper towels", top_k=1, use_rerank=True)
+
+    assert len(init_calls) == 1
+    assert len(read_csv_calls) == 1
