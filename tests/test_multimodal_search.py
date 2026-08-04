@@ -75,3 +75,18 @@ def test_image_search_loads_index_and_embedder_only_once_across_calls(
 
     assert len(load_calls) == 1
     assert len(init_calls) == 1
+
+
+def test_load_index_returns_qdrant_index_when_backend_is_qdrant(monkeypatch):
+    monkeypatch.setattr(search, "VECTOR_BACKEND", "qdrant")
+
+    class FakeQdrantIndex:
+        def __init__(self, collection_name):
+            self.collection_name = collection_name
+
+    monkeypatch.setattr(search, "QdrantIndex", FakeQdrantIndex)
+
+    index = search.load_index()
+
+    assert isinstance(index, FakeQdrantIndex)
+    assert index.collection_name == search.QDRANT_IMAGE_COLLECTION_NAME

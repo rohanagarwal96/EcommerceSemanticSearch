@@ -1,13 +1,17 @@
 """Image search orchestration: cached CLIP-based text-to-image search."""
+from ecomsearch.config import VECTOR_BACKEND
 from ecomsearch.index import ProductIndex
 from ecomsearch.multimodal.clip_embedder import ClipEmbedder
-from ecomsearch.multimodal.config import INDEX_PATH, ITEM_IDS_PATH
+from ecomsearch.multimodal.config import INDEX_PATH, ITEM_IDS_PATH, QDRANT_IMAGE_COLLECTION_NAME
+from ecomsearch.qdrant_index import QdrantIndex
 
 _index = None
 _embedder = None
 
 
-def load_index() -> ProductIndex:
+def load_index() -> ProductIndex | QdrantIndex:
+    if VECTOR_BACKEND == "qdrant":
+        return QdrantIndex(QDRANT_IMAGE_COLLECTION_NAME)
     if not INDEX_PATH.exists() or not ITEM_IDS_PATH.exists():
         raise SystemExit(
             f"No multimodal index found at {INDEX_PATH}. "
@@ -16,7 +20,7 @@ def load_index() -> ProductIndex:
     return ProductIndex.load(INDEX_PATH, ITEM_IDS_PATH)
 
 
-def _get_index() -> ProductIndex:
+def _get_index() -> ProductIndex | QdrantIndex:
     global _index
     if _index is None:
         _index = load_index()
