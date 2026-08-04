@@ -1,3 +1,4 @@
+import pytest
 from fastapi.testclient import TestClient
 
 from ecomsearch.api import app as app_module
@@ -61,3 +62,14 @@ def test_lifespan_skips_download_when_artifacts_already_present(monkeypatch, tmp
         pass
 
     assert download_calls == []
+
+
+def test_ensure_artifacts_present_exits_when_missing_and_no_dataset_repo(monkeypatch, tmp_path):
+    missing_catalog = tmp_path / "does_not_exist.csv"
+    monkeypatch.setattr(app_module, "CATALOG_PATH", missing_catalog)
+    monkeypatch.setattr(app_module, "HF_DATASET_REPO", None)
+
+    with pytest.raises(SystemExit) as excinfo:
+        app_module._ensure_artifacts_present()
+
+    assert "HF_DATASET_REPO" in str(excinfo.value)
