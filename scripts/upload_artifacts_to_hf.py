@@ -55,19 +55,19 @@ def main() -> None:
             raise SystemExit(f"Required artifact not found at {path}.{hint}")
 
     api = HfApi(token=HF_TOKEN)
-    print(f"Creating (or reusing) dataset repo '{HF_DATASET_REPO}'...")
-    api.create_repo(repo_id=HF_DATASET_REPO, repo_type="dataset", exist_ok=True)
 
     with tempfile.TemporaryDirectory() as staging:
         staging_dir = Path(staging)
         _stage_artifacts(staging_dir)
 
+        print(f"Creating (or reusing) dataset repo '{HF_DATASET_REPO}'...")
+        api.create_repo(repo_id=HF_DATASET_REPO, repo_type="dataset", exist_ok=True)
+
         print(f"Uploading staged artifacts to '{HF_DATASET_REPO}'...")
-        api.upload_folder(
+        api.upload_large_folder(
             repo_id=HF_DATASET_REPO,
             folder_path=str(staging_dir),
             repo_type="dataset",
-            commit_message="Upload catalog, BM25 index, and CLIP subset images",
         )
 
     print("Done.")
