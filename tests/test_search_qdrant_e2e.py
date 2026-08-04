@@ -11,6 +11,11 @@ from ecomsearch.multimodal import search as multimodal_search
 
 pytestmark = pytest.mark.skipif(not QDRANT_URL, reason="QDRANT_URL not configured")
 
+KNOWN_RELEVANT_ITEM_IDS_FOR_ALMOND_MILK = {
+    92137, 92144, 92585, 92641, 92671, 92700, 93002, 98504, 98505,
+    952903, 954673, 954690, 1163175, 1859122, 2026646,
+}
+
 
 @pytest.fixture(autouse=True)
 def qdrant_backend(monkeypatch):
@@ -23,7 +28,8 @@ def qdrant_backend(monkeypatch):
 def test_dense_search_returns_relevant_result_from_qdrant():
     results = search.dense_search("organic almond milk", top_k=5)
 
-    assert len(results) > 0
+    result_ids = {item_id for item_id, _ in results}
+    assert result_ids & KNOWN_RELEVANT_ITEM_IDS_FOR_ALMOND_MILK
 
 
 def test_image_search_returns_results_from_qdrant():
