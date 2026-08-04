@@ -10,11 +10,14 @@ from ecomsearch.config import (
     CATALOG_PATH,
     INDEX_PATH,
     ITEM_IDS_PATH,
+    QDRANT_COLLECTION_NAME,
     RERANK_POOL_SIZE,
+    VECTOR_BACKEND,
 )
 from ecomsearch.embeddings import Embedder
 from ecomsearch.fusion import reciprocal_rank_fusion
 from ecomsearch.index import ProductIndex
+from ecomsearch.qdrant_index import QdrantIndex
 from ecomsearch.reranker import CrossEncoderReranker
 
 _dense_index = None
@@ -25,7 +28,9 @@ _catalog = None
 _search_executor = None
 
 
-def load_dense_index() -> ProductIndex:
+def load_dense_index():
+    if VECTOR_BACKEND == "qdrant":
+        return QdrantIndex(QDRANT_COLLECTION_NAME)
     if not INDEX_PATH.exists() or not ITEM_IDS_PATH.exists():
         raise SystemExit(
             f"No dense index found at {INDEX_PATH}. "

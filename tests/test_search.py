@@ -133,6 +133,21 @@ def test_bm25_search_loads_index_only_once_across_calls(synthetic_catalog, monke
     assert len(load_calls) == 1
 
 
+def test_load_dense_index_returns_qdrant_index_when_backend_is_qdrant(monkeypatch):
+    monkeypatch.setattr(search, "VECTOR_BACKEND", "qdrant")
+
+    class FakeQdrantIndex:
+        def __init__(self, collection_name):
+            self.collection_name = collection_name
+
+    monkeypatch.setattr(search, "QdrantIndex", FakeQdrantIndex)
+
+    index = search.load_dense_index()
+
+    assert isinstance(index, FakeQdrantIndex)
+    assert index.collection_name == search.QDRANT_COLLECTION_NAME
+
+
 def test_hybrid_search_with_rerank_loads_reranker_and_catalog_only_once_across_calls(
     synthetic_catalog, monkeypatch
 ):
