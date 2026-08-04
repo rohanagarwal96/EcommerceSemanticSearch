@@ -71,6 +71,15 @@ def test_upsert_sends_points_with_item_id_as_point_id():
     assert sent_ids == [101, 202]
 
 
+def test_upsert_rejects_mismatched_lengths():
+    index = qdrant_index.QdrantIndex("test_collection")
+    vectors = np.array([[1.0, 0.0], [0.0, 1.0]], dtype="float32")
+    item_ids = np.array([101])
+
+    with pytest.raises(ValueError):
+        index.upsert(vectors, item_ids)
+
+
 def test_search_returns_item_id_score_tuples():
     index = qdrant_index.QdrantIndex("test_collection")
 

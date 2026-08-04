@@ -20,6 +20,8 @@ class QdrantIndex:
         )
 
     def upsert(self, vectors: np.ndarray, item_ids: np.ndarray) -> None:
+        if vectors.shape[0] != item_ids.shape[0]:
+            raise ValueError("vectors and item_ids must have the same length")
         points = [
             PointStruct(id=int(item_id), vector=vector.astype("float32").tolist())
             for vector, item_id in zip(vectors, item_ids)
