@@ -16,13 +16,16 @@ caching and search parallelization; `dense` and `bm25` modes meet a
 but doesn't fully clear it due to a documented architectural constraint
 in the keyword-search library — see
 [Latency Results](docs/latency_results.md) for the full investigation.
-Phases 5-8 in progress; this section will be updated as each phase lands.
+A FastAPI backend and Streamlit frontend now serve both text and image
+search over HTTP — see [Running the App](#running-the-app) below for how
+to run them locally. Phases 6-8 in progress; this section will be updated
+as each phase lands.
 
 - [x] Phase 1 — Text embedding baseline (FAISS + bge-small-en-v1.5)
 - [x] Phase 2 — Multimodal (CLIP) module
 - [x] Phase 3 — Hybrid retrieval + reranking
 - [x] Phase 4 — Evaluation and latency engineering
-- [ ] Phase 5 — Serving layer (FastAPI + Streamlit)
+- [x] Phase 5 — Serving layer (FastAPI + Streamlit)
 - [ ] Phase 6 — Deployment (Qdrant Cloud + Hugging Face Spaces)
 - [ ] Phase 7 — Production hygiene (CI, logging, rate limiting)
 - [ ] Phase 8 — Documentation finalization
@@ -134,6 +137,32 @@ ecomsearch-images search "something warm for rainy weather" --top-k 5
 ```
 
 Matched images are copied to `demo_results/<query-slug>/` for viewing.
+
+## Running the App
+
+A FastAPI backend serves all 4 text search modes plus multimodal image
+search over HTTP; a Streamlit frontend consumes it. Requires the dense,
+BM25, and multimodal indexes built above.
+
+Start the backend (in one terminal):
+
+```bash
+uvicorn ecomsearch.api.app:app --reload
+```
+
+Serves the API at `http://localhost:8000` (interactive docs at
+`/docs`). Startup pre-warms all search caches, so the first request is
+fast — but this makes startup itself slow (real model loads).
+
+Start the frontend (in a second terminal):
+
+```bash
+streamlit run src/ecomsearch/ui/streamlit_app.py
+```
+
+Serves the UI at `http://localhost:8501`, with tabs for text search and
+image search. Set the `API_BASE_URL` environment variable (default
+`http://localhost:8000`) to point the frontend at a different backend.
 
 ## Known limitations
 
