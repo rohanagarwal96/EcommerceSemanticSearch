@@ -1,5 +1,10 @@
 """Shared configuration constants for the ecomsearch package."""
+import os
 from pathlib import Path
+
+from dotenv import load_dotenv
+
+load_dotenv()
 
 REPO_ROOT = Path(__file__).resolve().parents[2]
 
@@ -29,3 +34,14 @@ LATENCY_RESULTS_PATH = REPO_ROOT / "docs" / "latency_results.md"
 LATENCY_TARGET_MS_P95 = 200.0
 BENCHMARK_REPEAT_COUNT = 10
 BENCHMARK_SEED = 42
+
+VECTOR_BACKEND = os.environ.get("VECTOR_BACKEND", "faiss")
+
+QDRANT_URL = os.environ.get("QDRANT_URL")
+QDRANT_API_KEY = os.environ.get("QDRANT_API_KEY")
+QDRANT_COLLECTION_NAME = os.environ.get("QDRANT_COLLECTION_NAME", "ecommerce_products")
+
+HF_TOKEN = os.environ.get("HF_TOKEN")
+HF_DATASET_REPO = os.environ.get("HF_DATASET_REPO")
+HF_SPACE_BACKEND = os.environ.get("HF_SPACE_BACKEND")
+HF_SPACE_FRONTEND = os.environ.get("HF_SPACE_FRONTEND")

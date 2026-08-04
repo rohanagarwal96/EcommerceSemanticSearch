@@ -1,4 +1,5 @@
 """Shared configuration constants for the multimodal (CLIP) module."""
+import os
 from pathlib import Path
 
 from ecomsearch.config import REPO_ROOT
@@ -20,3 +21,7 @@ SUBSET_SIZE = 5000
 DEFAULT_TOP_K = 10
 
 DEMO_RESULTS_DIR = REPO_ROOT / "demo_results"
+
+QDRANT_IMAGE_COLLECTION_NAME = os.environ.get(
+    "QDRANT_IMAGE_COLLECTION_NAME", "ecommerce_products_images"
+)
