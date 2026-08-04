@@ -28,7 +28,7 @@ _catalog = None
 _search_executor = None
 
 
-def load_dense_index():
+def load_dense_index() -> ProductIndex | QdrantIndex:
     if VECTOR_BACKEND == "qdrant":
         return QdrantIndex(QDRANT_COLLECTION_NAME)
     if not INDEX_PATH.exists() or not ITEM_IDS_PATH.exists():
@@ -48,7 +48,7 @@ def load_bm25_index() -> BM25Index:
     return BM25Index.load(BM25_INDEX_PATH)
 
 
-def _get_dense_index() -> ProductIndex:
+def _get_dense_index() -> ProductIndex | QdrantIndex:
     global _dense_index
     if _dense_index is None:
         _dense_index = load_dense_index()
