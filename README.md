@@ -164,22 +164,6 @@ Serves the UI at `http://localhost:8501`, with tabs for text search and
 image search. Set the `API_BASE_URL` environment variable (default
 `http://localhost:8000`) to point the frontend at a different backend.
 
-### Deployment artifacts (Phase 6, in progress)
-
-Production containers won't have the catalog CSV, BM25 index, or CLIP
-subset images baked in (too large, gitignored, and unnecessary for local
-dev where they're built from source). Instead, they'll be downloaded at
-container startup from a Hugging Face Hub dataset repo. The one-time
-upload — catalog CSV, BM25 pickle, and the 4,996 CLIP subset images plus
-their metadata (not the full 548MB local image dataset) — is done via:
-
-```bash
-python scripts/upload_artifacts_to_hf.py
-```
-
-Requires `HF_TOKEN` and `HF_DATASET_REPO` set in `.env`. The
-container-side download step is not yet implemented.
-
 ## Known limitations
 
 To be documented as they arise. Note in advance: the Qdrant free-tier
