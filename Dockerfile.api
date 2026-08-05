@@ -28,22 +28,21 @@ RUN pip install --no-cache-dir -e .
 
 # Production default -- local dev keeps VECTOR_BACKEND=faiss in .env.
 ENV VECTOR_BACKEND=qdrant
-# Works around HTTP 429 rate-limiting from Hugging Face's Xet transfer backend
-# when downloading the ~5,000-file artifact bundle (see _ensure_artifacts_present
-# in src/ecomsearch/api/app.py) -- falls back to plain HTTP downloads instead.
+# Works around HTTP 429 rate-limiting from Hugging Face's Xet transfer
+# backend, seen when this image's build-time model downloads (above) run
+# under load -- falls back to plain HTTP downloads instead.
 ENV HF_HUB_DISABLE_XET=1
 EXPOSE 7860
 
 # Hugging Face Spaces runs containers as UID 1000 regardless of Dockerfile
 # content (https://huggingface.co/docs/hub/spaces-sdks-docker) -- switch to
-# that user explicitly so local testing matches production. /app is
-# chowned to this user above so _ensure_artifacts_present() can create new
-# data/artifacts directories at runtime; the model cache under $HOME was
-# downloaded as root above but is world-readable by default, which is all
-# the model-loading *read* path needs. _ensure_artifacts_present()'s dataset
-# download also attempts a ref-bookkeeping *write* into that same root-owned
-# cache tree; huggingface_hub catches the resulting permission error
-# internally and logs it as "Ignored", so it doesn't affect startup.
+# that user explicitly so local testing matches that convention, even
+# though this project now runs via local Docker Compose. /app is chowned
+# to this user above for parity, though this project's Docker Compose
+# setup only bind-mounts data/artifacts read-only and never writes under
+# /app at runtime. The model cache under $HOME was downloaded as root
+# above but is world-readable by default, which is all the non-root
+# user's read-only model-loading path needs.
 USER user
 
 CMD ["sh", "-c", "uvicorn ecomsearch.api.app:app --host 0.0.0.0 --port ${PORT:-7860}"]
