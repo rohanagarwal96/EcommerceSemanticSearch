@@ -1,3 +1,9 @@
+# One-time setup on a fresh checkout, before the first `docker compose up`:
+# `docker compose up -d qdrant`, then run `scripts/upload_index_to_qdrant.py`
+# and `scripts/upload_multimodal_index_to_qdrant.py` against localhost:6333 to
+# populate the two collections below from your local FAISS indexes -- a fresh
+# qdrant container starts with no data. See README.md's "Running the App"
+# section for the full walkthrough.
 services:
   qdrant:
     image: qdrant/qdrant:latest
@@ -11,6 +17,10 @@ services:
       context: .
       dockerfile: Dockerfile.api
     depends_on:
+      # Only waits for the qdrant container process to start, not for its
+      # collections to be populated (see the one-time setup note above) or
+      # its HTTP API to be ready -- backend startup may need a retry if it
+      # races qdrant's own boot.
       - qdrant
     environment:
       VECTOR_BACKEND: qdrant
