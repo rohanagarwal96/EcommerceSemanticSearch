@@ -1,6 +1,10 @@
 FROM python:3.11-slim
 
+RUN useradd -m -u 1000 user
+
 WORKDIR /app
+
+ENV HOME=/home/user
 
 COPY requirements-ui.txt ./
 RUN pip install --no-cache-dir -r requirements-ui.txt
@@ -8,5 +12,12 @@ RUN pip install --no-cache-dir -r requirements-ui.txt
 COPY src/ecomsearch/ui/streamlit_app.py ./src/ecomsearch/ui/streamlit_app.py
 
 EXPOSE 7860
+
+# Hugging Face Spaces runs containers as UID 1000 regardless of Dockerfile
+# content (https://huggingface.co/docs/hub/spaces-sdks-docker) -- switch to
+# that user explicitly so local testing matches production, and so
+# Streamlit's ~/.streamlit config directory (under $HOME, owned by this
+# user via `useradd -m`) is writable at runtime.
+USER user
 
 CMD ["sh", "-c", "streamlit run src/ecomsearch/ui/streamlit_app.py --server.port=${PORT:-7860} --server.address=0.0.0.0"]

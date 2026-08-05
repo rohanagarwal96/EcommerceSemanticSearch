@@ -1,13 +1,21 @@
 FROM python:3.11-slim
 
+RUN useradd -m -u 1000 user
+
 WORKDIR /app
+RUN chown user:user /app
+
+ENV HOME=/home/user
 
 COPY requirements.txt pyproject.toml ./
 RUN pip install --no-cache-dir -r requirements.txt
 
 # Pre-download model weights at build time so container restarts don't refetch
 # them from Hugging Face Hub on every cold start. Placed before `COPY src/` so
-# editing application code doesn't invalidate these (slow) layers.
+# editing application code doesn't invalidate these (slow) layers. HOME is
+# already set to the non-root runtime user's home directory (see below) so
+# these build-time-downloaded weights land where that user's cache lookup
+# (~/.cache/huggingface) will actually find them at runtime.
 RUN python -c "from sentence_transformers import SentenceTransformer, CrossEncoder; \
 SentenceTransformer('BAAI/bge-small-en-v1.5'); \
 CrossEncoder('cross-encoder/ms-marco-MiniLM-L-6-v2')"
@@ -25,5 +33,14 @@ ENV VECTOR_BACKEND=qdrant
 # in src/ecomsearch/api/app.py) -- falls back to plain HTTP downloads instead.
 ENV HF_HUB_DISABLE_XET=1
 EXPOSE 7860
+
+# Hugging Face Spaces runs containers as UID 1000 regardless of Dockerfile
+# content (https://huggingface.co/docs/hub/spaces-sdks-docker) -- switch to
+# that user explicitly so local testing matches production. /app is
+# chowned to this user above so _ensure_artifacts_present() can create new
+# data/artifacts directories at runtime; the model cache under $HOME was
+# downloaded as root above but is world-readable by default, which is all
+# a read-only cache lookup needs.
+USER user
 
 CMD ["sh", "-c", "uvicorn ecomsearch.api.app:app --host 0.0.0.0 --port ${PORT:-7860}"]
