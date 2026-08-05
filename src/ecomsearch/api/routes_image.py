@@ -4,9 +4,10 @@ import time
 
 import pandas as pd
 import structlog
-from fastapi import APIRouter, HTTPException
+from fastapi import APIRouter, HTTPException, Request
 from fastapi.responses import FileResponse
 
+from ecomsearch.api.limiter import limiter
 from ecomsearch.api.schemas import ImageSearchResponse, ImageSearchResult
 from ecomsearch.multimodal.config import DATASET_IMAGES_DIR, DEFAULT_TOP_K, SUBSET_METADATA_PATH
 from ecomsearch.multimodal.search import image_search
@@ -25,7 +26,8 @@ def _get_metadata() -> pd.DataFrame:
 
 
 @router.get("/search/image", response_model=ImageSearchResponse)
-def search_image(q: str, top_k: int = DEFAULT_TOP_K) -> ImageSearchResponse:
+@limiter.limit("30/minute")
+def search_image(request: Request, q: str, top_k: int = DEFAULT_TOP_K) -> ImageSearchResponse:
     start = time.perf_counter()
     results = image_search(q, top_k)
     metadata = _get_metadata()

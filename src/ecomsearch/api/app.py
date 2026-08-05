@@ -5,7 +5,10 @@ from contextlib import asynccontextmanager
 import structlog
 from fastapi import FastAPI, Request
 from fastapi.responses import JSONResponse
+from slowapi import _rate_limit_exceeded_handler
+from slowapi.errors import RateLimitExceeded
 
+from ecomsearch.api.limiter import limiter
 from ecomsearch.api.routes_image import router as image_router
 from ecomsearch.api.routes_text import router as text_router
 from ecomsearch.multimodal.search import image_search
@@ -41,6 +44,9 @@ async def lifespan(app: FastAPI):
 app = FastAPI(title="E-Commerce Semantic Search API", lifespan=lifespan)
 app.include_router(text_router)
 app.include_router(image_router)
+
+app.state.limiter = limiter
+app.add_exception_handler(RateLimitExceeded, _rate_limit_exceeded_handler)
 
 
 @app.middleware("http")

@@ -5,8 +5,9 @@ from typing import Literal
 
 import pandas as pd
 import structlog
-from fastapi import APIRouter
+from fastapi import APIRouter, Request
 
+from ecomsearch.api.limiter import limiter
 from ecomsearch.api.schemas import TextSearchResponse, TextSearchResult
 from ecomsearch.config import CATALOG_PATH, DEFAULT_TOP_K
 from ecomsearch.search import bm25_search, dense_search, hybrid_search
@@ -34,7 +35,9 @@ def _get_catalog() -> pd.DataFrame:
 
 
 @router.get("/search/text", response_model=TextSearchResponse)
+@limiter.limit("30/minute")
 def search_text(
+    request: Request,
     q: str,
     mode: Literal["dense", "bm25", "hybrid", "hybrid-rerank"] = "hybrid",
     top_k: int = DEFAULT_TOP_K,
