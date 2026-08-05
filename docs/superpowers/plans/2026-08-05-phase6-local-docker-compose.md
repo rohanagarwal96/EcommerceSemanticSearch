@@ -150,19 +150,22 @@ git push origin main
 
 **Files:**
 - Delete: `render.yaml`
-- Delete: `scripts/deploy_frontend_space.py`
-- Delete: `tests/test_deploy_frontend_space.py`
 
-- [ ] **Step 1: Delete the three files**
+> **Note (updated after Task 1 executed):** `scripts/deploy_frontend_space.py`
+> and `tests/test_deploy_frontend_space.py` were already deleted as part of
+> Task 1 (they imported `HF_TOKEN`/`HF_SPACE_FRONTEND`, which Task 1 removed
+> from `config.py`, so their deletion had to be pulled forward to keep the
+> test suite green). This task now only needs to remove `render.yaml`.
+
+- [ ] **Step 1: Delete `render.yaml`**
 
 ```bash
 git rm render.yaml
-git rm scripts/deploy_frontend_space.py tests/test_deploy_frontend_space.py
 ```
 
-- [ ] **Step 2: Confirm nothing else references them**
+- [ ] **Step 2: Confirm nothing else references it**
 
-Run: `grep -rln "deploy_frontend_space\|render.yaml" src/ tests/ scripts/ | grep -v docs/`
+Run: `grep -rln "render.yaml" src/ tests/ scripts/ | grep -v docs/`
 Expected: no output.
 
 - [ ] **Step 3: Run the full test suite**
@@ -173,7 +176,7 @@ Expected: all tests pass.
 - [ ] **Step 4: Commit**
 
 ```bash
-git commit -m "chore: remove Render Blueprint and HF-Space frontend deploy in favor of local Docker Compose"
+git commit -m "chore: remove Render Blueprint in favor of local Docker Compose"
 git push origin main
 ```
 
