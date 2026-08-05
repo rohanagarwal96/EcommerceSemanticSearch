@@ -1,8 +1,10 @@
 """FastAPI routes for text (catalog) search."""
 
+import time
 from typing import Literal
 
 import pandas as pd
+import structlog
 from fastapi import APIRouter
 
 from ecomsearch.api.schemas import TextSearchResponse, TextSearchResult
@@ -10,6 +12,7 @@ from ecomsearch.config import CATALOG_PATH, DEFAULT_TOP_K
 from ecomsearch.search import bm25_search, dense_search, hybrid_search
 
 router = APIRouter()
+logger = structlog.get_logger()
 
 _catalog = None
 
@@ -36,6 +39,7 @@ def search_text(
     mode: Literal["dense", "bm25", "hybrid", "hybrid-rerank"] = "hybrid",
     top_k: int = DEFAULT_TOP_K,
 ) -> TextSearchResponse:
+    start = time.perf_counter()
     search_fn = MODES[mode]
     results = search_fn(q, top_k)
     catalog = _get_catalog()
@@ -53,4 +57,13 @@ def search_text(
             )
         )
 
+    duration_ms = (time.perf_counter() - start) * 1000
+    logger.info(
+        "text_search_completed",
+        query=q,
+        mode=mode,
+        top_k=top_k,
+        result_count=len(items),
+        duration_ms=round(duration_ms, 2),
+    )
     return TextSearchResponse(query=q, mode=mode, results=items)

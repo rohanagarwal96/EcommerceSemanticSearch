@@ -77,3 +77,25 @@ def test_get_image_returns_404_when_file_missing_from_disk(monkeypatch, tmp_path
     response = client.get("/images/501")
 
     assert response.status_code == 404
+
+
+def test_search_image_logs_a_structured_search_event(monkeypatch, tmp_path):
+    import structlog
+
+    metadata_path = tmp_path / "subset_metadata.csv"
+    pd.DataFrame(
+        [[501, "Red Bicycle", "Sporting Goods", "501.jpg"]], columns=METADATA_COLUMNS
+    ).to_csv(metadata_path, index=False)
+    monkeypatch.setattr(routes_image, "SUBSET_METADATA_PATH", metadata_path)
+    monkeypatch.setattr(routes_image, "_metadata", None, raising=False)
+    monkeypatch.setattr(routes_image, "image_search", lambda query, top_k: [(501, 0.91)])
+
+    client = TestClient(app)
+    with structlog.testing.capture_logs() as captured:
+        client.get("/search/image", params={"q": "red bicycle"})
+
+    search_logs = [e for e in captured if e.get("event") == "image_search_completed"]
+    assert len(search_logs) == 1
+    assert search_logs[0]["query"] == "red bicycle"
+    assert search_logs[0]["result_count"] == 1
+    assert "duration_ms" in search_logs[0]

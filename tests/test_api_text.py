@@ -59,3 +59,33 @@ def test_search_text_rejects_invalid_mode():
     response = client.get("/search/text", params={"q": "anything", "mode": "not-a-real-mode"})
 
     assert response.status_code == 422
+
+
+def test_search_text_logs_a_structured_search_event(monkeypatch, tmp_path):
+    import structlog
+
+    catalog_path = tmp_path / "catalog.csv"
+    pd.DataFrame(
+        {
+            "item_id": [101],
+            "name": ["Organic Almond Milk"],
+            "brand": ["Test Brand"],
+            "category_path": ["Dairy > Milk Alternatives"],
+        }
+    ).to_csv(catalog_path, index=False)
+    monkeypatch.setattr(routes_text, "CATALOG_PATH", catalog_path)
+    monkeypatch.setattr(routes_text, "_catalog", None, raising=False)
+    monkeypatch.setattr(
+        routes_text, "hybrid_search", lambda query, top_k, use_rerank: [(101, 0.87)]
+    )
+
+    client = TestClient(app)
+    with structlog.testing.capture_logs() as captured:
+        client.get("/search/text", params={"q": "almond milk"})
+
+    search_logs = [e for e in captured if e.get("event") == "text_search_completed"]
+    assert len(search_logs) == 1
+    assert search_logs[0]["query"] == "almond milk"
+    assert search_logs[0]["mode"] == "hybrid"
+    assert search_logs[0]["result_count"] == 1
+    assert "duration_ms" in search_logs[0]

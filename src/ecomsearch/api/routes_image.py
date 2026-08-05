@@ -1,6 +1,9 @@
 """FastAPI routes for multimodal (image) search."""
 
+import time
+
 import pandas as pd
+import structlog
 from fastapi import APIRouter, HTTPException
 from fastapi.responses import FileResponse
 
@@ -9,6 +12,7 @@ from ecomsearch.multimodal.config import DATASET_IMAGES_DIR, DEFAULT_TOP_K, SUBS
 from ecomsearch.multimodal.search import image_search
 
 router = APIRouter()
+logger = structlog.get_logger()
 
 _metadata = None
 
@@ -22,6 +26,7 @@ def _get_metadata() -> pd.DataFrame:
 
 @router.get("/search/image", response_model=ImageSearchResponse)
 def search_image(q: str, top_k: int = DEFAULT_TOP_K) -> ImageSearchResponse:
+    start = time.perf_counter()
     results = image_search(q, top_k)
     metadata = _get_metadata()
 
@@ -38,6 +43,13 @@ def search_image(q: str, top_k: int = DEFAULT_TOP_K) -> ImageSearchResponse:
             )
         )
 
+    duration_ms = (time.perf_counter() - start) * 1000
+    logger.info(
+        "image_search_completed",
+        query=q,
+        result_count=len(items),
+        duration_ms=round(duration_ms, 2),
+    )
     return ImageSearchResponse(query=q, results=items)
 
 
