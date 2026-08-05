@@ -5,11 +5,9 @@ WORKDIR /app
 COPY requirements.txt pyproject.toml ./
 RUN pip install --no-cache-dir -r requirements.txt
 
-COPY src/ ./src/
-RUN pip install --no-cache-dir -e .
-
 # Pre-download model weights at build time so container restarts don't refetch
-# them from Hugging Face Hub on every cold start.
+# them from Hugging Face Hub on every cold start. Placed before `COPY src/` so
+# editing application code doesn't invalidate these (slow) layers.
 RUN python -c "from sentence_transformers import SentenceTransformer, CrossEncoder; \
 SentenceTransformer('BAAI/bge-small-en-v1.5'); \
 CrossEncoder('cross-encoder/ms-marco-MiniLM-L-6-v2')"
@@ -17,7 +15,14 @@ RUN python -c "from transformers import CLIPModel, CLIPProcessor; \
 CLIPModel.from_pretrained('openai/clip-vit-base-patch32'); \
 CLIPProcessor.from_pretrained('openai/clip-vit-base-patch32')"
 
+COPY src/ ./src/
+RUN pip install --no-cache-dir -e .
+
+# Production default -- local dev keeps VECTOR_BACKEND=faiss in .env.
 ENV VECTOR_BACKEND=qdrant
+# Works around HTTP 429 rate-limiting from Hugging Face's Xet transfer backend
+# when downloading the ~5,000-file artifact bundle (see _ensure_artifacts_present
+# in src/ecomsearch/api/app.py) -- falls back to plain HTTP downloads instead.
 ENV HF_HUB_DISABLE_XET=1
 EXPOSE 7860
 
