@@ -58,8 +58,8 @@ else in this project.
 | Vector index (containerized) | Qdrant (self-hosted via Docker Compose) |
 | Keyword search | `rank_bm25` |
 | Reranker | `cross-encoder/ms-marco-MiniLM-L-6-v2` |
-| Backend | FastAPI (Docker) |
-| Frontend | Streamlit (Docker) |
+| Backend | FastAPI (`venv` or Docker Compose) |
+| Frontend | Streamlit (`venv` or Docker Compose) |
 | Deployment | Local Docker Compose (see [Running the App](#running-the-app)) |
 | CI/CD | Planned (Phase 7) |
 
