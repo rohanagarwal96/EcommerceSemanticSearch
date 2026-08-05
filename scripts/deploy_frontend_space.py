@@ -18,7 +18,6 @@ emoji: \U0001F6CD
 colorFrom: green
 colorTo: blue
 sdk: streamlit
-sdk_version: "1.60.0"
 app_file: streamlit_app.py
 ---
 
