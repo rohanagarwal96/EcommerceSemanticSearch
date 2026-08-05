@@ -97,5 +97,6 @@ def test_search_image_logs_a_structured_search_event(monkeypatch, tmp_path):
     search_logs = [e for e in captured if e.get("event") == "image_search_completed"]
     assert len(search_logs) == 1
     assert search_logs[0]["query"] == "red bicycle"
+    assert search_logs[0]["top_k"] == 10
     assert search_logs[0]["result_count"] == 1
     assert "duration_ms" in search_logs[0]

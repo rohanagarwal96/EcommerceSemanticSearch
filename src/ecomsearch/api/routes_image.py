@@ -47,6 +47,7 @@ def search_image(q: str, top_k: int = DEFAULT_TOP_K) -> ImageSearchResponse:
     logger.info(
         "image_search_completed",
         query=q,
+        top_k=top_k,
         result_count=len(items),
         duration_ms=round(duration_ms, 2),
     )
