@@ -2,7 +2,8 @@
 
 A semantic product search engine over a real e-commerce catalog: text and
 image (multimodal/CLIP) search that goes beyond exact keyword matching,
-targeting sub-200ms latency, deployed live at $0 infrastructure cost.
+targeting sub-200ms latency, fully containerized and runnable locally with
+a single `docker compose up`.
 
 ## Status
 
@@ -17,16 +18,17 @@ but doesn't fully clear it due to a documented architectural constraint
 in the keyword-search library — see
 [Latency Results](docs/latency_results.md) for the full investigation.
 A FastAPI backend and Streamlit frontend now serve both text and image
-search over HTTP — see [Running the App](#running-the-app) below for how
-to run them locally. Phases 6-8 in progress; this section will be updated
-as each phase lands.
+search over HTTP, either directly via `venv` or as a 3-container Docker
+Compose stack (Qdrant + backend + frontend) — see
+[Running the App](#running-the-app) below for both options. Phases 7-8
+in progress; this section will be updated as each phase lands.
 
 - [x] Phase 1 — Text embedding baseline (FAISS + bge-small-en-v1.5)
 - [x] Phase 2 — Multimodal (CLIP) module
 - [x] Phase 3 — Hybrid retrieval + reranking
 - [x] Phase 4 — Evaluation and latency engineering
 - [x] Phase 5 — Serving layer (FastAPI + Streamlit)
-- [ ] Phase 6 — Deployment (Qdrant Cloud + Hugging Face Spaces)
+- [x] Phase 6 — Deployment (local Docker Compose: Qdrant + FastAPI + Streamlit)
 - [ ] Phase 7 — Production hygiene (CI, logging, rate limiting)
 - [ ] Phase 8 — Documentation finalization
 
@@ -53,13 +55,13 @@ else in this project.
 | Text embeddings | `BAAI/bge-small-en-v1.5` |
 | Image embeddings | `openai/clip-vit-base-patch32` |
 | Vector index (dev) | FAISS |
-| Vector index (deployed) | Qdrant Cloud (free tier) |
+| Vector index (containerized) | Qdrant (self-hosted via Docker Compose) |
 | Keyword search | `rank_bm25` |
 | Reranker | `cross-encoder/ms-marco-MiniLM-L-6-v2` |
 | Backend | FastAPI (Docker) |
 | Frontend | Streamlit (Docker) |
-| Hosting | Hugging Face Spaces (free) |
-| CI/CD | GitHub Actions |
+| Deployment | Local Docker Compose (see [Running the App](#running-the-app)) |
+| CI/CD | Planned (Phase 7) |
 
 ## Evaluation
 
@@ -141,8 +143,19 @@ Matched images are copied to `demo_results/<query-slug>/` for viewing.
 ## Running the App
 
 A FastAPI backend serves all 4 text search modes plus multimodal image
-search over HTTP; a Streamlit frontend consumes it. Requires the dense,
-BM25, and multimodal indexes built above.
+search over HTTP; a Streamlit frontend consumes it. Both ways of running
+the app below require the dense, BM25, and multimodal indexes built above.
+
+This project intentionally runs locally rather than as a public cloud
+deployment. During Phase 6 we evaluated free-tier cloud hosting options —
+Hugging Face Spaces (Docker-SDK Spaces now require a paid PRO plan), Render
+(its cheapest tiers with enough RAM for this backend's three-model
+footprint start at $85/month), and Google Cloud Run (more setup overhead
+than a portfolio demo justifies) — and concluded a small, reproducible
+local stack was the better choice for demonstrating the system end-to-end
+without ongoing cost.
+
+### Option A: directly via `venv` (FAISS backend)
 
 Start the backend (in one terminal):
 
@@ -164,11 +177,39 @@ Serves the UI at `http://localhost:8501`, with tabs for text search and
 image search. Set the `API_BASE_URL` environment variable (default
 `http://localhost:8000`) to point the frontend at a different backend.
 
+### Option B: Docker Compose (Qdrant + backend + frontend)
+
+Runs the same app as three containers — a local Qdrant instance instead
+of FAISS files, plus the backend and frontend. One-time setup to populate
+Qdrant from your already-built local indexes:
+
+```bash
+docker compose up -d qdrant
+python scripts/upload_index_to_qdrant.py
+python scripts/upload_multimodal_index_to_qdrant.py
+```
+
+Then bring up the full stack:
+
+```bash
+docker compose up
+```
+
+Frontend at `http://localhost:8501`, backend at `http://localhost:8000`.
+Qdrant's data persists in a named Docker volume, so the one-time setup
+above only needs to run once per machine — future `docker compose up`
+runs reuse the already-populated collections.
+
+<!-- Demo: a short GIF/video of a few example searches (with the latency
+number visible) goes here once recorded. -->
+
 ## Known limitations
 
-To be documented as they arise. Note in advance: the Qdrant free-tier
-cluster auto-suspends after about a week of inactivity, so a demo visitor
-may see a cold-start delay on first query.
+To be documented as they arise. Note in advance: the backend's startup
+pre-warms three ML models (the bge-small embedder, the MiniLM
+cross-encoder reranker, and CLIP) plus the BM25 index — the first
+`docker compose up` after an image rebuild takes noticeably longer while
+these load into memory before the backend reports healthy.
 
 ## License
 
