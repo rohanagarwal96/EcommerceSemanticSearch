@@ -3,6 +3,7 @@
 Usage:
     python scripts/upload_multimodal_index_to_qdrant.py
 """
+
 import faiss
 import numpy as np
 
@@ -35,9 +36,7 @@ def main() -> None:
         qdrant_index.upsert(vectors[start:end], item_ids[start:end])
         print(f"  upserted {end}/{len(item_ids)}")
 
-    print(
-        f"Done. Collection '{QDRANT_IMAGE_COLLECTION_NAME}' now holds {len(item_ids)} vectors."
-    )
+    print(f"Done. Collection '{QDRANT_IMAGE_COLLECTION_NAME}' now holds {len(item_ids)} vectors.")
 
 
 if __name__ == "__main__":

@@ -1,4 +1,5 @@
 """FastAPI routes for text (catalog) search."""
+
 from typing import Literal
 
 import pandas as pd

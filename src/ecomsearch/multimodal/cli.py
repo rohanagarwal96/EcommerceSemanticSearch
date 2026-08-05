@@ -1,4 +1,5 @@
 """CLI entrypoint for cross-modal (text-to-image) product search."""
+
 import argparse
 import re
 import shutil

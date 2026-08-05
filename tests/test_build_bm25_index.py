@@ -1,6 +1,5 @@
-import pytest
-
 import build_bm25_index
+import pytest
 
 
 def test_main_exits_with_clear_message_when_catalog_missing(tmp_path, monkeypatch):

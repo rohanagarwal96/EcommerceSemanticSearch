@@ -3,6 +3,7 @@
 Usage:
     python scripts/download_multimodal_dataset.py
 """
+
 from ecomsearch.multimodal.config import (
     DATASET_CSV_PATH,
     DATASET_DIR,

@@ -4,6 +4,7 @@ build the FAISS index.
 Usage:
     python scripts/build_multimodal_index.py
 """
+
 import numpy as np
 import pandas as pd
 

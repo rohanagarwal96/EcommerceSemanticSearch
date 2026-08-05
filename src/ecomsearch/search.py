@@ -1,4 +1,5 @@
 """Retrieval orchestration: dense, keyword (BM25), and hybrid (RRF + rerank) search."""
+
 from concurrent.futures import ThreadPoolExecutor
 
 import pandas as pd
@@ -86,9 +87,9 @@ def _get_search_executor() -> ThreadPoolExecutor:
 def _get_catalog() -> pd.DataFrame:
     global _catalog
     if _catalog is None:
-        _catalog = pd.read_csv(
-            CATALOG_PATH, usecols=["item_id", "search_text"]
-        ).set_index("item_id")
+        _catalog = pd.read_csv(CATALOG_PATH, usecols=["item_id", "search_text"]).set_index(
+            "item_id"
+        )
     return _catalog
 
 

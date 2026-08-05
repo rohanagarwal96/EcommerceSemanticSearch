@@ -1,4 +1,5 @@
 """CLI entrypoint for semantic product search."""
+
 import argparse
 
 import pandas as pd

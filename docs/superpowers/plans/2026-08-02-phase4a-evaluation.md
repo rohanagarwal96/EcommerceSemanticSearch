@@ -23,7 +23,6 @@
 
 The file currently ends with the Phase 3 additions (`RERANK_POOL_SIZE = 50`). Append:
 ```python
-
 EVAL_QUERIES_PATH = REPO_ROOT / "eval" / "eval_queries.json"
 EVAL_RESULTS_PATH = REPO_ROOT / "docs" / "eval_results.md"
 EVAL_TOP_K = 10
@@ -132,6 +131,7 @@ Expected: FAIL with `ModuleNotFoundError: No module named 'ecomsearch.eval'`
 
 ```python
 """Evaluation metrics: Recall@k, NDCG@k, and MRR over ranked item_id lists."""
+
 import math
 
 
@@ -217,6 +217,7 @@ tool used to help draft eval/eval_queries.json.
 Usage:
     python scripts/pool_eval_candidates.py "organic almond milk" "gluten free pasta"
 """
+
 import sys
 
 import pandas as pd
@@ -254,8 +255,7 @@ def main() -> None:
             row = catalog.loc[item_id]
             description = str(row["description"])[:120] if pd.notna(row["description"]) else ""
             print(
-                f"  {item_id}\t{row['name']}\t{row['brand']}\t"
-                f"{row['category_path']}\t{description}"
+                f"  {item_id}\t{row['name']}\t{row['brand']}\t{row['category_path']}\t{description}"
             )
 
 
@@ -393,6 +393,7 @@ compute Recall@10/NDCG@10/MRR per mode, and write a comparison table.
 Usage:
     python scripts/run_eval.py
 """
+
 import json
 
 from ecomsearch.config import EVAL_QUERIES_PATH, EVAL_RESULTS_PATH, EVAL_TOP_K

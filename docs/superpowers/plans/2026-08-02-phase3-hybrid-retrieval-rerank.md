@@ -57,7 +57,6 @@ git push origin main
 
 The file currently ends with `DEFAULT_TOP_K = 10`. Append:
 ```python
-
 BM25_INDEX_PATH = ARTIFACTS_DIR / "bm25.pkl"
 
 RERANKER_MODEL_NAME = "cross-encoder/ms-marco-MiniLM-L-6-v2"
@@ -139,6 +138,7 @@ Expected: FAIL with `ModuleNotFoundError: No module named 'ecomsearch.bm25'`
 
 ```python
 """BM25 keyword search index over product search_text."""
+
 import pickle
 import re
 from pathlib import Path
@@ -254,6 +254,7 @@ Expected: FAIL with `ModuleNotFoundError: No module named 'ecomsearch.fusion'`
 
 ```python
 """Reciprocal Rank Fusion for combining multiple ranked result lists."""
+
 from ecomsearch.config import RRF_K
 
 
@@ -295,8 +296,6 @@ git push origin main
 Add this fixture to the end of the existing `tests/conftest.py` (after the `clip_embedder` fixture — do not remove or change the existing `embedder`/`clip_embedder` fixtures):
 
 ```python
-
-
 @pytest.fixture(scope="session")
 def cross_encoder():
     from ecomsearch.reranker import CrossEncoderReranker
@@ -327,6 +326,7 @@ Expected: FAIL with `ModuleNotFoundError: No module named 'ecomsearch.reranker'`
 
 ```python
 """Cross-encoder reranking for search result candidates."""
+
 from sentence_transformers import CrossEncoder
 
 from ecomsearch.config import RERANKER_MODEL_NAME
@@ -457,6 +457,7 @@ Expected: FAIL with `ModuleNotFoundError: No module named 'ecomsearch.search'`
 
 ```python
 """Retrieval orchestration: dense, keyword (BM25), and hybrid (RRF + rerank) search."""
+
 import pandas as pd
 
 from ecomsearch.bm25 import BM25Index
@@ -516,9 +517,7 @@ def hybrid_search(query: str, top_k: int, use_rerank: bool = True) -> list[tuple
         return fused[:top_k]
 
     candidate_ids = [item_id for item_id, _ in fused[:RERANK_POOL_SIZE]]
-    catalog = pd.read_csv(
-        CATALOG_PATH, usecols=["item_id", "search_text"]
-    ).set_index("item_id")
+    catalog = pd.read_csv(CATALOG_PATH, usecols=["item_id", "search_text"]).set_index("item_id")
     candidates = [(item_id, catalog.loc[item_id, "search_text"]) for item_id in candidate_ids]
 
     reranker = CrossEncoderReranker()
@@ -578,6 +577,7 @@ Expected: FAIL with `ModuleNotFoundError: No module named 'build_bm25_index'`
 Usage:
     python scripts/build_bm25_index.py
 """
+
 import pandas as pd
 
 from ecomsearch.bm25 import BM25Index
@@ -704,6 +704,7 @@ Expected: FAIL — `cli.py` doesn't accept a `mode` argument yet, and doesn't im
 
 ```python
 """CLI entrypoint for semantic product search."""
+
 import argparse
 
 import pandas as pd

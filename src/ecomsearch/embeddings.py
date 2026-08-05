@@ -1,6 +1,7 @@
 """Text embedding utilities wrapping the configured bge sentence-transformers model."""
-from sentence_transformers import SentenceTransformer
+
 import numpy as np
+from sentence_transformers import SentenceTransformer
 
 from ecomsearch.config import MAX_TOKENS, MODEL_NAME, QUERY_PREFIX
 

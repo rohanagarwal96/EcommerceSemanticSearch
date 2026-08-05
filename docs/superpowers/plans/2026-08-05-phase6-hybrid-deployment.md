@@ -180,6 +180,7 @@ Hugging Face Space using the native Streamlit SDK (no Docker required).
 Usage:
     python scripts/deploy_frontend_space.py
 """
+
 import shutil
 import tempfile
 from pathlib import Path
@@ -190,7 +191,7 @@ from ecomsearch.config import HF_SPACE_FRONTEND, HF_TOKEN, REPO_ROOT
 
 SPACE_README = """---
 title: Ecommerce Search UI
-emoji: \U0001F6CD
+emoji: \U0001f6cd
 colorFrom: green
 colorTo: blue
 sdk: streamlit

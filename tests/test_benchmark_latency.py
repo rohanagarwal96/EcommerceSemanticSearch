@@ -1,6 +1,5 @@
-import pytest
-
 import benchmark_latency
+import pytest
 
 
 def test_main_exits_with_clear_message_when_eval_queries_missing(tmp_path, monkeypatch):

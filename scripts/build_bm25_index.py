@@ -3,6 +3,7 @@
 Usage:
     python scripts/build_bm25_index.py
 """
+
 import pandas as pd
 
 from ecomsearch.bm25 import BM25Index

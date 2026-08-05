@@ -1,4 +1,5 @@
 """Pydantic request/response models for the FastAPI app."""
+
 from pydantic import BaseModel
 
 

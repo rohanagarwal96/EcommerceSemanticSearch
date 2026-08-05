@@ -3,6 +3,7 @@
 Usage:
     python scripts/upload_index_to_qdrant.py
 """
+
 import faiss
 import numpy as np
 

@@ -1,4 +1,5 @@
 """Real end-to-end round trip against the actual Qdrant Cloud cluster (no mocking)."""
+
 import numpy as np
 import pytest
 

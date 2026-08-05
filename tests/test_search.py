@@ -4,8 +4,8 @@ import pytest
 
 from ecomsearch import search
 from ecomsearch.bm25 import BM25Index
-from ecomsearch.index import ProductIndex
 from ecomsearch.embeddings import Embedder
+from ecomsearch.index import ProductIndex
 from ecomsearch.reranker import CrossEncoderReranker
 
 

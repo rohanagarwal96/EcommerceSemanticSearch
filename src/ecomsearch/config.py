@@ -1,4 +1,5 @@
 """Shared configuration constants for the ecomsearch package."""
+
 import os
 from pathlib import Path
 

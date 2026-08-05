@@ -1,4 +1,5 @@
 """FastAPI routes for multimodal (image) search."""
+
 import pandas as pd
 from fastapi import APIRouter, HTTPException
 from fastapi.responses import FileResponse

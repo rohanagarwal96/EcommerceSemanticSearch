@@ -32,6 +32,7 @@ Replace the entire file with:
 
 ```python
 """FastAPI application: serving layer for text and image product search."""
+
 from contextlib import asynccontextmanager
 
 from fastapi import FastAPI

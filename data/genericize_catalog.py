@@ -8,17 +8,19 @@ ingredients, and the category taxonomy.
 Usage:
     python genericize_catalog.py input.csv output.csv
 """
-import sys
-import re
+
 import json
+import re
+import sys
+
 import pandas as pd
 
 STORE_NAME = "Wegmans"
-GENERIC_BRAND = "Store Brand"          # replacement for private-label brand_raw
-GENERIC_LINE = "Value Choice"          # replacement token inside product names
-GENERIC_QUALITY_BANNER = "our house quality standard"   # replaces "Food You Feel Good About"
-GENERIC_LOYALTY = "the store loyalty program"            # replaces "Shoppers Club"
-GENERIC_BAKESHOP = "our bakery"                          # replaces "Wegmans Bakeshop"
+GENERIC_BRAND = "Store Brand"  # replacement for private-label brand_raw
+GENERIC_LINE = "Value Choice"  # replacement token inside product names
+GENERIC_QUALITY_BANNER = "our house quality standard"  # replaces "Food You Feel Good About"
+GENERIC_LOYALTY = "the store loyalty program"  # replaces "Shoppers Club"
+GENERIC_BAKESHOP = "our bakery"  # replaces "Wegmans Bakeshop"
 
 # Columns that only exist for internal pipeline tracking, not useful for search
 DROP_COLS = ["url", "datapoint_id", "raw_data_id", "created_at_utc", "updated_at_utc"]
@@ -52,7 +54,9 @@ def strip_store_identity(text):
     text = ADDRESS_BLOCK_RE.sub("", text)
     text = ROCHESTER_SENTENCE_RE.sub("", text)
     # \s+ (not a literal single space) since source text has inconsistent double-spacing
-    text = re.sub(r"Food\s+You\s+Feel\s+Good\s+About", GENERIC_QUALITY_BANNER, text, flags=re.IGNORECASE)
+    text = re.sub(
+        r"Food\s+You\s+Feel\s+Good\s+About", GENERIC_QUALITY_BANNER, text, flags=re.IGNORECASE
+    )
     text = re.sub(r"Shoppers\s?Club", GENERIC_LOYALTY, text, flags=re.IGNORECASE)
     text = re.sub(rf"{STORE_NAME}\s+Bakeshop", GENERIC_BAKESHOP, text, flags=re.IGNORECASE)
     text = re.sub(rf"The\s+{STORE_NAME}\s+Family", "our team", text, flags=re.IGNORECASE)
@@ -94,7 +98,9 @@ def genericize_tags(tags_str):
     if not isinstance(tags_str, str):
         return tags_str
     tags_str = re.sub(rf"{STORE_NAME}\s+Brand", GENERIC_BRAND, tags_str, flags=re.IGNORECASE)
-    tags_str = re.sub(r"Food\s+You\s+Feel\s+Good\s+About", GENERIC_QUALITY_BANNER, tags_str, flags=re.IGNORECASE)
+    tags_str = re.sub(
+        r"Food\s+You\s+Feel\s+Good\s+About", GENERIC_QUALITY_BANNER, tags_str, flags=re.IGNORECASE
+    )
     tags_str = re.sub(rf"{STORE_NAME.lower()}_brand", "store_brand", tags_str, flags=re.IGNORECASE)
     # catch-all for any other stray mention
     tags_str = re.sub(STORE_NAME, GENERIC_LINE, tags_str, flags=re.IGNORECASE)

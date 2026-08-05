@@ -3,6 +3,7 @@ actual Qdrant Cloud cluster with production-scale data (populated by
 scripts/upload_index_to_qdrant.py and scripts/upload_multimodal_index_to_qdrant.py).
 Skipped if Qdrant Cloud credentials aren't configured.
 """
+
 import pytest
 
 from ecomsearch import search
@@ -12,8 +13,21 @@ from ecomsearch.multimodal import search as multimodal_search
 pytestmark = pytest.mark.skipif(not QDRANT_URL, reason="QDRANT_URL not configured")
 
 KNOWN_RELEVANT_ITEM_IDS_FOR_ALMOND_MILK = {
-    92137, 92144, 92585, 92641, 92671, 92700, 93002, 98504, 98505,
-    952903, 954673, 954690, 1163175, 1859122, 2026646,
+    92137,
+    92144,
+    92585,
+    92641,
+    92671,
+    92700,
+    93002,
+    98504,
+    98505,
+    952903,
+    954673,
+    954690,
+    1163175,
+    1859122,
+    2026646,
 }
 
 

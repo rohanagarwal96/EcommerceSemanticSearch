@@ -1,6 +1,5 @@
-import pytest
-
 import build_multimodal_index
+import pytest
 
 
 def test_main_exits_with_clear_message_when_dataset_missing(tmp_path, monkeypatch):

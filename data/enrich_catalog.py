@@ -10,10 +10,12 @@ Output: ecommerce_catalog_enriched.csv (ready for embedding / indexing)
 Usage:
     python enrich_catalog.py input.csv output.csv
 """
-import sys
-import re
-import json
+
 import ast
+import json
+import re
+import sys
+
 import pandas as pd
 
 # item_info keys that are internal pipeline identifiers, not useful for search
@@ -140,7 +142,7 @@ def build_search_text(row):
     if row.get("tags_list"):
         parts.append(f"Attributes: {', '.join(row['tags_list'])}.")
     text = " ".join(str(p) for p in parts)
-    text = re.sub(r"<[^>]+>", " ", text)          # strip stray HTML tags seen in ingredients
+    text = re.sub(r"<[^>]+>", " ", text)  # strip stray HTML tags seen in ingredients
     text = re.sub(r"\s{2,}", " ", text).strip()
     return text
 
@@ -158,8 +160,16 @@ def enrich_catalog(df: pd.DataFrame) -> pd.DataFrame:
 
     # drop dead legacy columns (entirely null in source) BEFORE deriving new
     # columns of the same name below (is_organic in particular is reused)
-    dead_cols = ["name_clean", "category", "department", "subcategory",
-                 "size_raw", "is_organic", "item_info", "sizing_comp"]
+    dead_cols = [
+        "name_clean",
+        "category",
+        "department",
+        "subcategory",
+        "size_raw",
+        "is_organic",
+        "item_info",
+        "sizing_comp",
+    ]
     df = df.drop(columns=[c for c in dead_cols if c in df.columns])
 
     # --- tags: normalize both formats, derive dietary flags ---
@@ -180,12 +190,33 @@ def enrich_catalog(df: pd.DataFrame) -> pd.DataFrame:
 
     # column order: identity -> content -> structured attributes -> search_text
     col_order = [
-        "item_id", "name", "brand", "category_l0", "category_l1", "category_l2",
-        "category_l3", "category_path", "description", "ingredients", "tags_str",
-        "is_organic", "is_vegan", "is_gluten_free", "is_kosher", "is_lactose_free",
-        "is_store_brand", "unit_price_usd", "unit_price_uom", "package_size",
-        "package_size_numeric", "num_servings", "serving_size", "serving_size_uom",
-        "billed_by_weight", "ordered_by_weight", "search_text",
+        "item_id",
+        "name",
+        "brand",
+        "category_l0",
+        "category_l1",
+        "category_l2",
+        "category_l3",
+        "category_path",
+        "description",
+        "ingredients",
+        "tags_str",
+        "is_organic",
+        "is_vegan",
+        "is_gluten_free",
+        "is_kosher",
+        "is_lactose_free",
+        "is_store_brand",
+        "unit_price_usd",
+        "unit_price_uom",
+        "package_size",
+        "package_size_numeric",
+        "num_servings",
+        "serving_size",
+        "serving_size_uom",
+        "billed_by_weight",
+        "ordered_by_weight",
+        "search_text",
     ]
     df = df[[c for c in col_order if c in df.columns]]
     return df

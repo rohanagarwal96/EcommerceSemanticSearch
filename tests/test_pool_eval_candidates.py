@@ -1,6 +1,5 @@
-import pytest
-
 import pool_eval_candidates
+import pytest
 
 
 def test_main_exits_with_usage_message_when_no_queries_given(monkeypatch):

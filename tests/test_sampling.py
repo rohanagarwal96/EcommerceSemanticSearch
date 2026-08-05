@@ -4,10 +4,12 @@ from ecomsearch.multimodal.sampling import stratified_sample
 
 
 def test_stratified_sample_preserves_category_proportions():
-    df = pd.DataFrame({
-        "category": ["a"] * 80 + ["b"] * 20,
-        "value": range(100),
-    })
+    df = pd.DataFrame(
+        {
+            "category": ["a"] * 80 + ["b"] * 20,
+            "value": range(100),
+        }
+    )
 
     sampled = stratified_sample(df, "category", 10)
 

@@ -36,11 +36,13 @@ _embedder = None
 _reranker = None
 _catalog = None
 
+
 def _get_dense_index():
     global _dense_index
     if _dense_index is None:
         _dense_index = load_dense_index()
     return _dense_index
+
 
 def _get_bm25_index():
     global _bm25_index
@@ -48,11 +50,13 @@ def _get_bm25_index():
         _bm25_index = load_bm25_index()
     return _bm25_index
 
+
 def _get_embedder():
     global _embedder
     if _embedder is None:
         _embedder = Embedder()
     return _embedder
+
 
 def _get_reranker():
     global _reranker
@@ -60,12 +64,13 @@ def _get_reranker():
         _reranker = CrossEncoderReranker()
     return _reranker
 
+
 def _get_catalog():
     global _catalog
     if _catalog is None:
-        _catalog = pd.read_csv(
-            CATALOG_PATH, usecols=["item_id", "search_text"]
-        ).set_index("item_id")
+        _catalog = pd.read_csv(CATALOG_PATH, usecols=["item_id", "search_text"]).set_index(
+            "item_id"
+        )
     return _catalog
 ```
 

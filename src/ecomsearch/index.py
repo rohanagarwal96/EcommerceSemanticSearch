@@ -1,4 +1,5 @@
 """FAISS-backed nearest neighbor index over product embeddings."""
+
 from pathlib import Path
 
 import faiss

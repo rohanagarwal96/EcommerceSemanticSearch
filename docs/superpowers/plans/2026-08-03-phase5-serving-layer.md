@@ -149,6 +149,7 @@ Expected: FAIL with `ModuleNotFoundError: No module named 'ecomsearch.multimodal
 
 ```python
 """Image search orchestration: cached CLIP-based text-to-image search."""
+
 from ecomsearch.index import ProductIndex
 from ecomsearch.multimodal.clip_embedder import ClipEmbedder
 from ecomsearch.multimodal.config import INDEX_PATH, ITEM_IDS_PATH
@@ -218,6 +219,7 @@ Create `src/ecomsearch/api/__init__.py` with empty content (0 bytes).
 
 ```python
 """Pydantic request/response models for the FastAPI app."""
+
 from pydantic import BaseModel
 
 
@@ -290,6 +292,7 @@ Expected: FAIL with `ModuleNotFoundError: No module named 'ecomsearch.api.app'`
 
 ```python
 """FastAPI application: serving layer for text and image product search."""
+
 from contextlib import asynccontextmanager
 
 from fastapi import FastAPI
@@ -416,6 +419,7 @@ Expected: FAIL with `ModuleNotFoundError: No module named 'ecomsearch.api.routes
 
 ```python
 """FastAPI routes for text (catalog) search."""
+
 from typing import Literal
 
 import pandas as pd
@@ -581,6 +585,7 @@ Expected: FAIL with `ModuleNotFoundError: No module named 'ecomsearch.api.routes
 
 ```python
 """FastAPI routes for multimodal (image) search."""
+
 import pandas as pd
 from fastapi import APIRouter, HTTPException
 from fastapi.responses import FileResponse
@@ -729,6 +734,7 @@ Create `src/ecomsearch/ui/__init__.py` with empty content (0 bytes).
 
 ```python
 """Streamlit frontend for the E-Commerce Semantic Search API."""
+
 import os
 
 import requests

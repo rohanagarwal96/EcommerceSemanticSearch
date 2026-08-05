@@ -3,6 +3,7 @@
 Usage:
     python scripts/build_index.py
 """
+
 import pandas as pd
 
 from ecomsearch.config import ARTIFACTS_DIR, CATALOG_PATH, INDEX_PATH, ITEM_IDS_PATH

@@ -23,7 +23,6 @@
 
 The file currently ends with the Phase 4a additions (`EVAL_TOP_K = 10`). Append:
 ```python
-
 LATENCY_RESULTS_PATH = REPO_ROOT / "docs" / "latency_results.md"
 LATENCY_TARGET_MS_P95 = 200.0
 BENCHMARK_REPEAT_COUNT = 10
@@ -98,6 +97,7 @@ Expected: FAIL with `ModuleNotFoundError: No module named 'ecomsearch.latency'`
 
 ```python
 """Pure latency-measurement helpers (percentile computation, no I/O)."""
+
 import math
 
 
@@ -249,6 +249,7 @@ Replace the full file with:
 
 ```python
 """Retrieval orchestration: dense, keyword (BM25), and hybrid (RRF + rerank) search."""
+
 import pandas as pd
 
 from ecomsearch.bm25 import BM25Index
@@ -321,9 +322,9 @@ def _get_reranker() -> CrossEncoderReranker:
 def _get_catalog() -> pd.DataFrame:
     global _catalog
     if _catalog is None:
-        _catalog = pd.read_csv(
-            CATALOG_PATH, usecols=["item_id", "search_text"]
-        ).set_index("item_id")
+        _catalog = pd.read_csv(CATALOG_PATH, usecols=["item_id", "search_text"]).set_index(
+            "item_id"
+        )
     return _catalog
 
 
@@ -419,6 +420,7 @@ in a warm, cached process, and write results to docs/latency_results.md.
 Usage:
     python scripts/benchmark_latency.py
 """
+
 import json
 import random
 import time

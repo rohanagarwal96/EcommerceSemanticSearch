@@ -1,4 +1,5 @@
 """Reciprocal Rank Fusion for combining multiple ranked result lists."""
+
 from ecomsearch.config import RRF_K
 
 

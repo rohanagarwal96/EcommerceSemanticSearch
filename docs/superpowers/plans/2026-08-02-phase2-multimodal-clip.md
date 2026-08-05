@@ -90,6 +90,7 @@ git push origin main
 
 ```python
 """Shared configuration constants for the multimodal (CLIP) module."""
+
 from pathlib import Path
 
 from ecomsearch.config import REPO_ROOT
@@ -221,6 +222,7 @@ Expected: FAIL with `ModuleNotFoundError: No module named 'ecomsearch.multimodal
 
 ```python
 """Image/text embedding utilities wrapping OpenAI CLIP via transformers."""
+
 import numpy as np
 import torch
 from PIL import Image
@@ -284,10 +286,12 @@ from ecomsearch.multimodal.sampling import stratified_sample
 
 
 def test_stratified_sample_preserves_category_proportions():
-    df = pd.DataFrame({
-        "category": ["a"] * 80 + ["b"] * 20,
-        "value": range(100),
-    })
+    df = pd.DataFrame(
+        {
+            "category": ["a"] * 80 + ["b"] * 20,
+            "value": range(100),
+        }
+    )
 
     sampled = stratified_sample(df, "category", 10)
 
@@ -314,6 +318,7 @@ Expected: FAIL with `ModuleNotFoundError: No module named 'ecomsearch.multimodal
 
 ```python
 """Category-stratified sampling utilities for the multimodal dataset."""
+
 import pandas as pd
 
 
@@ -448,6 +453,7 @@ Expected: FAIL with `ModuleNotFoundError: No module named 'download_multimodal_d
 Usage:
     python scripts/download_multimodal_dataset.py
 """
+
 from ecomsearch.multimodal.config import (
     DATASET_CSV_PATH,
     DATASET_DIR,
@@ -544,6 +550,7 @@ build the FAISS index.
 Usage:
     python scripts/build_multimodal_index.py
 """
+
 import pandas as pd
 
 from ecomsearch.index import ProductIndex
@@ -661,6 +668,7 @@ Expected: FAIL with `ModuleNotFoundError: No module named 'ecomsearch.multimodal
 
 ```python
 """CLI entrypoint for cross-modal (text-to-image) product search."""
+
 import argparse
 import re
 import shutil

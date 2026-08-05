@@ -1,4 +1,5 @@
 """Qdrant Cloud-backed nearest neighbor index over product embeddings."""
+
 import numpy as np
 from qdrant_client import QdrantClient
 from qdrant_client.models import Distance, PointStruct, VectorParams

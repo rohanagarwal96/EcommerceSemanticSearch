@@ -61,6 +61,7 @@ Add `import os` and the `dotenv` import/call at the top, and the new constants a
 
 ```python
 """Shared configuration constants for the ecomsearch package."""
+
 import os
 from pathlib import Path
 
@@ -115,6 +116,7 @@ Add `import os` at the top and one new constant at the bottom. The full file bec
 
 ```python
 """Shared configuration constants for the multimodal (CLIP) module."""
+
 import os
 from pathlib import Path
 
@@ -289,6 +291,7 @@ Expected: FAIL with `ModuleNotFoundError: No module named 'ecomsearch.qdrant_ind
 
 ```python
 """Qdrant Cloud-backed nearest neighbor index over product embeddings."""
+
 import numpy as np
 from qdrant_client import QdrantClient
 from qdrant_client.models import Distance, PointStruct, VectorParams
@@ -336,6 +339,7 @@ This is a real, non-mocked test against your actual Qdrant Cloud cluster — it 
 
 ```python
 """Real end-to-end round trip against the actual Qdrant Cloud cluster (no mocking)."""
+
 import numpy as np
 import pytest
 
@@ -421,6 +425,7 @@ Update the imports and `load_dense_index()`:
 
 ```python
 """Retrieval orchestration: dense, keyword (BM25), and hybrid (RRF + rerank) search."""
+
 from concurrent.futures import ThreadPoolExecutor
 
 import pandas as pd
@@ -513,6 +518,7 @@ Expected: FAIL with `AttributeError: module 'ecomsearch.multimodal.search' has n
 
 ```python
 """Image search orchestration: cached CLIP-based text-to-image search."""
+
 from ecomsearch.config import VECTOR_BACKEND
 from ecomsearch.index import ProductIndex
 from ecomsearch.multimodal.clip_embedder import ClipEmbedder
@@ -609,6 +615,7 @@ Expected: FAIL with `ModuleNotFoundError: No module named 'upload_index_to_qdran
 Usage:
     python scripts/upload_index_to_qdrant.py
 """
+
 import faiss
 import numpy as np
 
@@ -722,6 +729,7 @@ Expected: FAIL with `ModuleNotFoundError: No module named 'upload_multimodal_ind
 Usage:
     python scripts/upload_multimodal_index_to_qdrant.py
 """
+
 import faiss
 import numpy as np
 
@@ -754,9 +762,7 @@ def main() -> None:
         qdrant_index.upsert(vectors[start:end], item_ids[start:end])
         print(f"  upserted {end}/{len(item_ids)}")
 
-    print(
-        f"Done. Collection '{QDRANT_IMAGE_COLLECTION_NAME}' now holds {len(item_ids)} vectors."
-    )
+    print(f"Done. Collection '{QDRANT_IMAGE_COLLECTION_NAME}' now holds {len(item_ids)} vectors.")
 
 
 if __name__ == "__main__":
@@ -815,6 +821,7 @@ actual Qdrant Cloud cluster with production-scale data (populated by
 scripts/upload_index_to_qdrant.py and scripts/upload_multimodal_index_to_qdrant.py).
 Skipped if Qdrant Cloud credentials aren't configured.
 """
+
 import pytest
 
 from ecomsearch import search
@@ -910,6 +917,7 @@ Docker image.
 Usage:
     python scripts/upload_artifacts_to_hf.py
 """
+
 import shutil
 import tempfile
 from pathlib import Path
@@ -1064,6 +1072,7 @@ Expected: FAIL with `AttributeError: <module 'ecomsearch.api.app'> does not have
 
 ```python
 """FastAPI application: serving layer for text and image product search."""
+
 from contextlib import asynccontextmanager
 
 from fastapi import FastAPI
@@ -1339,6 +1348,7 @@ Hugging Face Space.
 Usage:
     python scripts/deploy_backend_space.py
 """
+
 import shutil
 import tempfile
 from pathlib import Path
@@ -1349,7 +1359,7 @@ from ecomsearch.config import HF_SPACE_BACKEND, HF_TOKEN, REPO_ROOT
 
 SPACE_README = """---
 title: Ecommerce Search API
-emoji: \U0001F50D
+emoji: \U0001f50d
 colorFrom: blue
 colorTo: green
 sdk: docker
@@ -1401,6 +1411,7 @@ Hugging Face Space.
 Usage:
     python scripts/deploy_frontend_space.py
 """
+
 import shutil
 import tempfile
 from pathlib import Path
@@ -1411,7 +1422,7 @@ from ecomsearch.config import HF_SPACE_FRONTEND, HF_TOKEN, REPO_ROOT
 
 SPACE_README = """---
 title: Ecommerce Search UI
-emoji: \U0001F6CD
+emoji: \U0001f6cd
 colorFrom: green
 colorTo: blue
 sdk: docker

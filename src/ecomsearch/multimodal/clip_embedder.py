@@ -1,4 +1,5 @@
 """Image/text embedding utilities wrapping OpenAI CLIP via transformers."""
+
 import numpy as np
 import torch
 from PIL import Image

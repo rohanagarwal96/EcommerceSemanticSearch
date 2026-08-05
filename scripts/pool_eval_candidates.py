@@ -6,6 +6,7 @@ tool used to help draft eval/eval_queries.json.
 Usage:
     python scripts/pool_eval_candidates.py "organic almond milk" "gluten free pasta"
 """
+
 import sys
 
 import pandas as pd
@@ -49,8 +50,7 @@ def main() -> None:
             row = catalog.loc[item_id]
             description = str(row["description"])[:120] if pd.notna(row["description"]) else ""
             print(
-                f"  {item_id}\t{row['name']}\t{row['brand']}\t"
-                f"{row['category_path']}\t{description}"
+                f"  {item_id}\t{row['name']}\t{row['brand']}\t{row['category_path']}\t{description}"
             )
 
 

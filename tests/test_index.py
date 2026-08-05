@@ -9,11 +9,16 @@ def _normalize(vectors: np.ndarray) -> np.ndarray:
 
 
 def test_search_returns_nearest_neighbor_first():
-    vectors = _normalize(np.array([
-        [1.0, 0.0],
-        [0.0, 1.0],
-        [0.9, 0.1],
-    ], dtype="float32"))
+    vectors = _normalize(
+        np.array(
+            [
+                [1.0, 0.0],
+                [0.0, 1.0],
+                [0.9, 0.1],
+            ],
+            dtype="float32",
+        )
+    )
     item_ids = np.array([101, 202, 303])
 
     index = ProductIndex(dim=2)
@@ -33,10 +38,15 @@ def test_add_rejects_mismatched_lengths():
 
 
 def test_save_and_load_round_trip(tmp_path):
-    vectors = _normalize(np.array([
-        [1.0, 0.0],
-        [0.0, 1.0],
-    ], dtype="float32"))
+    vectors = _normalize(
+        np.array(
+            [
+                [1.0, 0.0],
+                [0.0, 1.0],
+            ],
+            dtype="float32",
+        )
+    )
     item_ids = np.array([11, 22])
 
     index = ProductIndex(dim=2)

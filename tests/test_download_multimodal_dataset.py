@@ -1,6 +1,5 @@
-import pytest
-
 import download_multimodal_dataset
+import pytest
 
 
 def test_main_skips_when_dataset_already_present(tmp_path, monkeypatch, capsys):

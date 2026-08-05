@@ -1,4 +1,5 @@
 """BM25 keyword search index over product search_text."""
+
 import pickle
 import re
 from pathlib import Path

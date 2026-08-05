@@ -1,4 +1,5 @@
 """Image search orchestration: cached CLIP-based text-to-image search."""
+
 from ecomsearch.config import VECTOR_BACKEND
 from ecomsearch.index import ProductIndex
 from ecomsearch.multimodal.clip_embedder import ClipEmbedder

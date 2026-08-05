@@ -102,6 +102,7 @@ git push origin main
 
 ```python
 """Shared configuration constants for the ecomsearch package."""
+
 from pathlib import Path
 
 REPO_ROOT = Path(__file__).resolve().parents[2]
@@ -210,6 +211,7 @@ Expected: FAIL with `ModuleNotFoundError: No module named 'ecomsearch.embeddings
 
 ```python
 """Text embedding utilities wrapping BAAI/bge-base-en-v1.5."""
+
 from sentence_transformers import SentenceTransformer
 import numpy as np
 
@@ -272,11 +274,16 @@ def _normalize(vectors: np.ndarray) -> np.ndarray:
 
 
 def test_search_returns_nearest_neighbor_first():
-    vectors = _normalize(np.array([
-        [1.0, 0.0],
-        [0.0, 1.0],
-        [0.9, 0.1],
-    ], dtype="float32"))
+    vectors = _normalize(
+        np.array(
+            [
+                [1.0, 0.0],
+                [0.0, 1.0],
+                [0.9, 0.1],
+            ],
+            dtype="float32",
+        )
+    )
     item_ids = np.array([101, 202, 303])
 
     index = ProductIndex(dim=2)
@@ -296,10 +303,15 @@ def test_add_rejects_mismatched_lengths():
 
 
 def test_save_and_load_round_trip(tmp_path):
-    vectors = _normalize(np.array([
-        [1.0, 0.0],
-        [0.0, 1.0],
-    ], dtype="float32"))
+    vectors = _normalize(
+        np.array(
+            [
+                [1.0, 0.0],
+                [0.0, 1.0],
+            ],
+            dtype="float32",
+        )
+    )
     item_ids = np.array([11, 22])
 
     index = ProductIndex(dim=2)
@@ -324,6 +336,7 @@ Expected: FAIL with `ModuleNotFoundError: No module named 'ecomsearch.index'`
 
 ```python
 """FAISS-backed nearest neighbor index over product embeddings."""
+
 from pathlib import Path
 
 import faiss
@@ -469,6 +482,7 @@ Expected: FAIL with `ModuleNotFoundError: No module named 'build_index'`
 Usage:
     python scripts/build_index.py
 """
+
 import pandas as pd
 
 from ecomsearch.config import ARTIFACTS_DIR, CATALOG_PATH, INDEX_PATH, ITEM_IDS_PATH
@@ -558,6 +572,7 @@ Expected: FAIL with `ModuleNotFoundError: No module named 'ecomsearch.cli'`
 
 ```python
 """CLI entrypoint for semantic product search."""
+
 import argparse
 
 import pandas as pd

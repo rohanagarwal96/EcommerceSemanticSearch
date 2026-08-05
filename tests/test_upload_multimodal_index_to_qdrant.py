@@ -1,5 +1,4 @@
 import pytest
-
 import upload_multimodal_index_to_qdrant
 
 

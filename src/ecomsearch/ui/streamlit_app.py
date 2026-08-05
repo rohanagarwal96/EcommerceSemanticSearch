@@ -1,4 +1,5 @@
 """Streamlit frontend for the E-Commerce Semantic Search API."""
+
 import os
 
 import requests

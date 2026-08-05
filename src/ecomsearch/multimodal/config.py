@@ -1,4 +1,5 @@
 """Shared configuration constants for the multimodal (CLIP) module."""
+
 import os
 from pathlib import Path
 

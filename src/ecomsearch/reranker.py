@@ -1,4 +1,5 @@
 """Cross-encoder reranking for search result candidates."""
+
 from sentence_transformers import CrossEncoder
 
 from ecomsearch.config import RERANKER_MODEL_NAME

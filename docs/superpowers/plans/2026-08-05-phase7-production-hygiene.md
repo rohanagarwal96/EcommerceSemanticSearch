@@ -67,7 +67,9 @@ This should resolve the `I001` (unsorted-imports) violations automatically.
 
 Replace:
 ```python
-    text = re.sub(r"Food\s+You\s+Feel\s+Good\s+About", GENERIC_QUALITY_BANNER, text, flags=re.IGNORECASE)
+text = re.sub(
+    r"Food\s+You\s+Feel\s+Good\s+About", GENERIC_QUALITY_BANNER, text, flags=re.IGNORECASE
+)
 ```
 with:
 ```python
@@ -78,7 +80,9 @@ with:
 
 Replace:
 ```python
-    tags_str = re.sub(r"Food\s+You\s+Feel\s+Good\s+About", GENERIC_QUALITY_BANNER, tags_str, flags=re.IGNORECASE)
+tags_str = re.sub(
+    r"Food\s+You\s+Feel\s+Good\s+About", GENERIC_QUALITY_BANNER, tags_str, flags=re.IGNORECASE
+)
 ```
 with:
 ```python
@@ -265,6 +269,7 @@ Expected: FAIL — no `request_completed`/`unhandled_exception` events exist yet
 Replace the full file with:
 ```python
 """FastAPI application: serving layer for text and image product search."""
+
 import time
 from contextlib import asynccontextmanager
 
@@ -548,6 +553,7 @@ Then: `venv/Scripts/python.exe -m pip install -r requirements.txt`
 A separate module for the shared `Limiter` instance, so both `app.py` and the route modules can import it without a circular import (`app.py` imports the routers, which would otherwise need to import `app.py` for the limiter):
 ```python
 """Shared rate limiter instance for the FastAPI backend."""
+
 from slowapi import Limiter
 from slowapi.util import get_remote_address
 

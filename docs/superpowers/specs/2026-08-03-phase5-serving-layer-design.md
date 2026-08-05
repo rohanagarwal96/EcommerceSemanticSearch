@@ -52,10 +52,12 @@ class TextSearchResult(BaseModel):
     category_path: str
     score: float
 
+
 class TextSearchResponse(BaseModel):
     query: str
     mode: str
     results: list[TextSearchResult]
+
 
 class ImageSearchResult(BaseModel):
     item_id: int
@@ -63,6 +65,7 @@ class ImageSearchResult(BaseModel):
     category: str
     score: float
     image_url: str  # points at /images/{item_id}
+
 
 class ImageSearchResponse(BaseModel):
     query: str

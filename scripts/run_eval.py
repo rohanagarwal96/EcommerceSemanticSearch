@@ -4,6 +4,7 @@ compute Recall@10/NDCG@10/MRR per mode, and write a comparison table.
 Usage:
     python scripts/run_eval.py
 """
+
 import json
 
 from ecomsearch.config import EVAL_QUERIES_PATH, EVAL_RESULTS_PATH, EVAL_TOP_K
