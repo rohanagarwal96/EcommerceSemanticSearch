@@ -43,5 +43,4 @@ QDRANT_COLLECTION_NAME = os.environ.get("QDRANT_COLLECTION_NAME", "ecommerce_pro
 
 HF_TOKEN = os.environ.get("HF_TOKEN")
 HF_DATASET_REPO = os.environ.get("HF_DATASET_REPO")
-HF_SPACE_BACKEND = os.environ.get("HF_SPACE_BACKEND")
 HF_SPACE_FRONTEND = os.environ.get("HF_SPACE_FRONTEND")
