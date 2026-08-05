@@ -40,7 +40,3 @@ VECTOR_BACKEND = os.environ.get("VECTOR_BACKEND", "faiss")
 QDRANT_URL = os.environ.get("QDRANT_URL")
 QDRANT_API_KEY = os.environ.get("QDRANT_API_KEY")
 QDRANT_COLLECTION_NAME = os.environ.get("QDRANT_COLLECTION_NAME", "ecommerce_products")
-
-HF_TOKEN = os.environ.get("HF_TOKEN")
-HF_DATASET_REPO = os.environ.get("HF_DATASET_REPO")
-HF_SPACE_FRONTEND = os.environ.get("HF_SPACE_FRONTEND")
