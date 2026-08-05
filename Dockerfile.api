@@ -40,7 +40,10 @@ EXPOSE 7860
 # chowned to this user above so _ensure_artifacts_present() can create new
 # data/artifacts directories at runtime; the model cache under $HOME was
 # downloaded as root above but is world-readable by default, which is all
-# a read-only cache lookup needs.
+# the model-loading *read* path needs. _ensure_artifacts_present()'s dataset
+# download also attempts a ref-bookkeeping *write* into that same root-owned
+# cache tree; huggingface_hub catches the resulting permission error
+# internally and logs it as "Ignored", so it doesn't affect startup.
 USER user
 
 CMD ["sh", "-c", "uvicorn ecomsearch.api.app:app --host 0.0.0.0 --port ${PORT:-7860}"]
