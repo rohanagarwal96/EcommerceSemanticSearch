@@ -20,8 +20,8 @@ in the keyword-search library — see
 A FastAPI backend and Streamlit frontend now serve both text and image
 search over HTTP, either directly via `venv` or as a 3-container Docker
 Compose stack (Qdrant + backend + frontend) — see
-[Running the App](#running-the-app) below for both options. Phases 7-8
-in progress; this section will be updated as each phase lands.
+[Running the App](#running-the-app) below for both options. Phase 8
+in progress; this section will be updated as it lands.
 
 - [x] Phase 1 — Text embedding baseline (FAISS + bge-small-en-v1.5)
 - [x] Phase 2 — Multimodal (CLIP) module
@@ -29,7 +29,7 @@ in progress; this section will be updated as each phase lands.
 - [x] Phase 4 — Evaluation and latency engineering
 - [x] Phase 5 — Serving layer (FastAPI + Streamlit)
 - [x] Phase 6 — Deployment (local Docker Compose: Qdrant + FastAPI + Streamlit)
-- [ ] Phase 7 — Production hygiene (CI, logging, rate limiting)
+- [x] Phase 7 — Production hygiene (CI, logging, rate limiting)
 - [ ] Phase 8 — Documentation finalization
 
 ## Data
@@ -61,7 +61,7 @@ else in this project.
 | Backend | FastAPI (`venv` or Docker Compose) |
 | Frontend | Streamlit (`venv` or Docker Compose) |
 | Deployment | Local Docker Compose (see [Running the App](#running-the-app)) |
-| CI/CD | Planned (Phase 7) |
+| CI/CD | GitHub Actions (lint + full test suite on every push) |
 
 ## Evaluation
 
@@ -202,6 +202,23 @@ runs reuse the already-populated collections.
 
 <!-- Demo: a short GIF/video of a few example searches (with the latency
 number visible) goes here once recorded. -->
+
+## Production hygiene
+
+- **CI**: every push/PR runs Ruff (lint + format check) and the full
+  pytest suite via GitHub Actions (`.github/workflows/ci.yml`). Since the
+  FAISS/BM25/CLIP index files aren't committed to the repo (too large,
+  gitignored), the test job builds them from scratch on a cache miss —
+  requiring `KAGGLE_USERNAME`/`KAGGLE_KEY` repository secrets for the
+  multimodal dataset — and caches the result keyed on the catalog and
+  build-script contents, so only the first run (or a real data/script
+  change) pays that cost.
+- **Logging**: the FastAPI backend emits structured JSON logs to stdout
+  (via `structlog`) for every request and every search, plus stack traces
+  for unhandled exceptions — viewable with `docker compose logs backend`.
+- **Rate limiting**: `/search/text` and `/search/image` are limited to 30
+  requests/minute per client IP (via `slowapi`); exceeding it returns
+  HTTP 429. `/health` and `/images/{item_id}` are unaffected.
 
 ## Known limitations
 
