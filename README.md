@@ -309,13 +309,15 @@ search over HTTP; a Streamlit frontend consumes it. Both ways of running
 the app below require the dense, BM25, and multimodal indexes built above.
 
 This project intentionally runs locally rather than as a public cloud
-deployment. During Phase 6 we evaluated free-tier cloud hosting options —
-Hugging Face Spaces (Docker-SDK Spaces now require a paid PRO plan), Render
-(its cheapest tiers with enough RAM for this backend's three-model
-footprint start at $85/month), and Google Cloud Run (more setup overhead
-than a portfolio demo justifies) — and concluded a small, reproducible
-local stack was the better choice for demonstrating the system end-to-end
-without ongoing cost.
+deployment. Phase 6 attempted two free-tier cloud hosting paths for
+real — Hugging Face Spaces (Docker-SDK Spaces now require a paid PRO
+plan) and Render (its cheapest tiers with enough RAM for this backend's
+three-model footprint start at $85/month) — and concluded a small,
+reproducible local stack was the better choice for demonstrating the
+system end-to-end without ongoing cost. See
+[How this was built](#how-this-was-built) and
+[Retrospective / lessons learned](#retrospective--lessons-learned) for
+the full story.
 
 ### Option A: directly via `venv` (FAISS backend)
 
