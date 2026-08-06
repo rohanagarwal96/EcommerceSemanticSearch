@@ -37,8 +37,7 @@ in the keyword-search library — see
 A FastAPI backend and Streamlit frontend now serve both text and image
 search over HTTP, either directly via `venv` or as a 3-container Docker
 Compose stack (Qdrant + backend + frontend) — see
-[Running the App](#running-the-app) below for both options. All 8
-planned phases are complete.
+[Running the App](#running-the-app) below for both options.
 
 - [x] Phase 1 — Text embedding baseline (FAISS + bge-small-en-v1.5)
 - [x] Phase 2 — Multimodal (CLIP) module
