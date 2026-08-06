@@ -240,45 +240,64 @@ cost. Full methodology and investigation in
 
 ## Setup
 
+New to this project? Follow these steps in order — each one builds on the
+last.
+
+**1. Clone the repo and set up a Python virtual environment:**
+
 ```bash
+git clone https://github.com/rohanagarwal96/EcommerceSemanticSearch.git
+cd EcommerceSemanticSearch
 python -m venv venv
 source venv/Scripts/activate   # on Linux/Mac: source venv/bin/activate
+```
+
+**2. Install dependencies:**
+
+```bash
 pip install -r requirements.txt
 pip install -e .
 ```
 
-Build the search index once (embeds all 55,516 products; took a few
-hours on a low-power laptop CPU in development, but should be much
-faster — likely under 30 minutes — on a typical desktop or server CPU):
+**3. Build the text search indexes** (one-time; the catalog CSV is
+already included in this repo, so no download is needed for this step):
 
 ```bash
-python scripts/build_index.py
+python scripts/build_index.py       # embeds all 55,516 products with bge-small-en-v1.5
+python scripts/build_bm25_index.py  # builds the keyword (BM25) index
 ```
 
-Build the BM25 keyword index once (fast — pure term-frequency counting,
-no neural network, typically well under a minute):
+`build_index.py` embeds the full catalog and is the slow step — it took a
+few hours on a low-power laptop CPU in development, but should be much
+faster (likely under 30 minutes) on a typical desktop or server CPU.
+`build_bm25_index.py` is fast (pure term-frequency counting, no neural
+network, typically well under a minute).
 
-```bash
-python scripts/build_bm25_index.py
-```
-
-Then choose a retrieval mode:
+**4. Run your first search** from the command line:
 
 ```bash
 ecomsearch search "organic almond milk" --top-k 5 --mode hybrid-rerank
 ```
 
-`--mode` accepts `dense`, `bm25`, `hybrid`, or `hybrid-rerank` (the
-default) — useful for comparing retrieval strategies.
+`--mode` accepts `dense` (pure embedding similarity), `bm25` (pure
+keyword), `hybrid` (both combined), or `hybrid-rerank` (the default —
+hybrid plus a final reranking pass) — useful for comparing retrieval
+strategies against each other.
+
+At this point you have a working text search CLI. To also try the
+multimodal (CLIP) image search, or to run the full HTTP API + web UI, see
+below.
 
 ### Multimodal (CLIP) demo
 
-Requires a Kaggle API token at `~/.kaggle/kaggle.json`
+This is a separate, smaller demo on a different (properly licensed,
+image-inclusive) dataset — see [Data](#data) for why. Requires a free
+Kaggle account and API token saved at `~/.kaggle/kaggle.json`
 ([setup instructions](https://www.kaggle.com/docs/api)).
 
 ```bash
-python scripts/download_multimodal_dataset.py
-python scripts/build_multimodal_index.py
+python scripts/download_multimodal_dataset.py  # downloads the ~5,000-item image dataset
+python scripts/build_multimodal_index.py       # embeds it with CLIP
 ecomsearch-images search "something warm for rainy weather" --top-k 5
 ```
 
@@ -343,9 +362,6 @@ Frontend at `http://localhost:8501`, backend at `http://localhost:8000`.
 Qdrant's data persists in a named Docker volume, so the one-time setup
 above only needs to run once per machine — future `docker compose up`
 runs reuse the already-populated collections.
-
-<!-- Demo: a short GIF/video of a few example searches (with the latency
-number visible) goes here once recorded. -->
 
 ## Production hygiene
 
