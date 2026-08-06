@@ -380,6 +380,38 @@ runs reuse the already-populated collections.
   requests/minute per client IP (via `slowapi`); exceeding it returns
   HTTP 429. `/health` and `/images/{item_id}` are unaffected.
 
+## Retrospective / lessons learned
+
+A few real engineering-judgment moments from building this, beyond what
+the phase-by-phase summary above covers:
+
+- **A "faster" algorithm change was reverted after it broke correctness.**
+  While chasing `hybrid` mode's latency target (Phase 4), replacing
+  BM25's full sort with a faster top-k selection algorithm looked like a
+  clear win on paper. A targeted stress test caught it silently returning
+  the wrong tied items in 86% of trials with tie-heavy score
+  distributions — a real correctness regression that the initial
+  (untested-on-ties) test suite had missed. It was reverted rather than
+  shipped, even though the "faster" version would have looked fine in
+  casual testing. See [Latency Results](docs/latency_results.md) for the
+  full investigation.
+- **Cloud deployment took three attempts to get right — or rather, to
+  find out it wasn't worth getting "right" at all.** Each pivot in Phase
+  6 was driven by a real constraint discovered only by actually trying to
+  deploy, not by research alone: Hugging Face's Docker Spaces requiring a
+  paid plan, then Render's free/cheap tiers not having enough RAM for a
+  three-model backend. The eventual local-only Docker Compose choice
+  wasn't a fallback out of laziness — it was the option that actually
+  fit a zero-cost portfolio project's real constraints, once those
+  constraints were fully understood.
+- **CI passing locally doesn't mean CI passing for real.** Phase 7's
+  GitHub Actions workflow looked complete and matched what ran locally —
+  until the first real run on GitHub failed, because the FAISS/BM25/CLIP
+  index files are gitignored (too large for git) and were never actually
+  being built in that fresh environment. The fix (build them in CI, cache
+  the result) only became obvious once the workflow was run for real
+  instead of just reviewed.
+
 ## Known limitations
 
 To be documented as they arise. Note in advance: the backend's startup
