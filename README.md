@@ -110,6 +110,72 @@ embeds a text query with CLIP into the same vector space as pre-computed
 product image embeddings, so a text description can retrieve photos
 directly.
 
+## How this was built
+
+This project was built in 8 phases, each adding a capability and
+answering a specific question about the previous one's limitations.
+
+**Phase 1 — Text embedding baseline.** Started with the simplest thing
+that could demonstrate semantic search: embed the catalog once with
+`BAAI/bge-small-en-v1.5` (a small, fast, CPU-friendly sentence-transformer)
+and search it with a FAISS `IndexFlatIP` (exact cosine similarity search
+over normalized vectors). This alone already beats keyword search on
+paraphrased queries, and gave a working CLI end-to-end before adding any
+complexity.
+
+**Phase 2 — Multimodal (CLIP) module.** The main catalog has no product
+images (the source retailer's Terms of Service prohibit image scraping),
+so a cross-modal (text-to-image) search demo needed a separate, properly
+licensed dataset — a public Kaggle fashion product dataset. This phase
+embeds a ~5,000-item subset with CLIP, a model trained to place images and
+text descriptions in the same vector space, so a plain-language query can
+retrieve matching photos with no manual tagging involved.
+
+**Phase 3 — Hybrid retrieval + reranking.** Dense embeddings alone are
+weaker at exact-term matches — a specific brand name or model number is
+often better served by traditional keyword search. This phase added BM25
+keyword search alongside dense search, combined both ranked lists with
+Reciprocal Rank Fusion, and added an optional cross-encoder reranking pass
+over the fused candidates for a final quality boost on the top results.
+
+**Phase 4 — Evaluation and latency engineering.** A search system's
+quality claims are only as good as the measurements behind them. This
+phase built a real evaluation harness (35 hand-labeled queries, pooled
+relevance judgments across all 4 modes) and a latency benchmark (350 timed
+calls per mode, in a warmed process) — see
+[Evaluation Results](docs/eval_results.md) and
+[Latency Results](docs/latency_results.md) for the actual numbers and the
+engineering investigation behind them, including one optimization that was
+tried, found to introduce a real correctness regression, and reverted
+rather than shipped.
+
+**Phase 5 — Serving layer.** A CLI is fine for development but doesn't
+demonstrate a real product. This phase wrapped the same retrieval logic in
+a FastAPI backend (serving all 4 text modes plus image search over HTTP)
+and a Streamlit frontend, so the whole system could be used interactively
+through a browser instead of a terminal.
+
+**Phase 6 — Deployment.** This phase went through three real iterations.
+The original plan was Qdrant Cloud plus Hugging Face Spaces (both free
+tier) — but a real deploy attempt found HF now requires a paid PRO plan to
+host Docker-based Spaces. The fallback was a hybrid split (backend on
+Render, frontend on HF's native Streamlit SDK) — but Render's free and
+cheap tiers don't have enough RAM for a backend loading three ML models
+at once. The final, pragmatic choice: run the whole stack locally with
+Docker Compose (Qdrant + backend + frontend), which is free, reproducible
+on any machine, and still demonstrates real containerization and a real
+vector database rather than just local files.
+
+**Phase 7 — Production hygiene.** A demo-only app doesn't show
+production-readiness thinking. This phase added CI (GitHub Actions running
+lint and the full test suite on every push), structured JSON logging in
+the backend, and per-IP rate limiting on the search endpoints — plus, once
+real end-to-end CI verification was attempted, discovered and fixed a gap
+where the search indexes (gitignored for size) were never actually being
+built in the CI environment, so CI now builds and caches them.
+
+**Phase 8 — Documentation finalization.** This README.
+
 ## Data
 
 The catalog (`data/ecommerce_catalog_enriched.csv`, 55,516 rows) has been
