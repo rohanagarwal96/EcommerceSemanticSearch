@@ -5,9 +5,26 @@ image (multimodal/CLIP) search that goes beyond exact keyword matching,
 targeting sub-200ms latency, fully containerized and runnable locally with
 a single `docker compose up`.
 
+## Table of Contents
+
+- [Status](#status)
+- [What this project does](#what-this-project-does)
+- [Architecture](#architecture)
+- [How this was built](#how-this-was-built)
+- [Data](#data)
+- [Stack](#stack)
+- [Evaluation](#evaluation)
+- [Latency](#latency)
+- [Setup](#setup)
+- [Running the App](#running-the-app)
+- [Production hygiene](#production-hygiene)
+- [Retrospective / lessons learned](#retrospective--lessons-learned)
+- [Known limitations](#known-limitations)
+- [License](#license)
+
 ## Status
 
-Phases 1-4 complete — a working semantic search CLI (dense, BM25 keyword,
+All 8 phases complete — a working semantic search CLI (dense, BM25 keyword,
 and hybrid+reranked modes) over the full catalog, plus a cross-modal
 (text-to-image) search demo. Retrieval quality has been evaluated across
 all 4 modes — see [Evaluation Results](docs/eval_results.md). Latency was
@@ -20,8 +37,8 @@ in the keyword-search library — see
 A FastAPI backend and Streamlit frontend now serve both text and image
 search over HTTP, either directly via `venv` or as a 3-container Docker
 Compose stack (Qdrant + backend + frontend) — see
-[Running the App](#running-the-app) below for both options. Phase 8
-in progress; this section will be updated as it lands.
+[Running the App](#running-the-app) below for both options. All 8
+planned phases are complete.
 
 - [x] Phase 1 — Text embedding baseline (FAISS + bge-small-en-v1.5)
 - [x] Phase 2 — Multimodal (CLIP) module
@@ -30,7 +47,68 @@ in progress; this section will be updated as it lands.
 - [x] Phase 5 — Serving layer (FastAPI + Streamlit)
 - [x] Phase 6 — Deployment (local Docker Compose: Qdrant + FastAPI + Streamlit)
 - [x] Phase 7 — Production hygiene (CI, logging, rate limiting)
-- [ ] Phase 8 — Documentation finalization
+- [x] Phase 8 — Documentation finalization
+
+## What this project does
+
+Most e-commerce site search only matches exact words. Search "cozy winter
+coat" on a site that only has "warm jacket" in stock, and you get nothing
+— even though a human would immediately see these mean almost the same
+thing. This project fixes that by understanding the *meaning* of a query,
+not just its keywords.
+
+It does this in two ways over the same 55,516-product catalog:
+
+- **Text search**: converts both the search query and every product's
+  description into numerical vectors (embeddings) that capture meaning.
+  Products whose vectors are close to the query's vector are semantically
+  related, even if they don't share a single word. This is combined with
+  traditional keyword search (which is still better at exact matches like
+  brand names or model numbers) and a final re-ranking pass, so the system
+  gets the best of both approaches.
+- **Image search**: a separate demo lets you search a smaller product
+  catalog *by image* using a text description — e.g. searching "something
+  warm for rainy weather" returns matching product photos, without ever
+  looking at a caption. This uses a different kind of embedding (CLIP)
+  that understands both text and images in the same shared space.
+
+Both are served over a real HTTP API with a web UI, run either directly on
+your machine or as a small set of Docker containers, and are backed by
+real, measured evaluation and latency numbers rather than just a demo that
+"looks like it works."
+
+## Architecture
+
+```mermaid
+flowchart TD
+    UI[Streamlit frontend] -->|HTTP| API[FastAPI backend]
+
+    API --> TextRoute["/search/text"]
+    API --> ImageRoute["/search/image"]
+
+    TextRoute --> Dense[Dense: bge-small embeddings]
+    TextRoute --> BM25[BM25 keyword search]
+    Dense --> VectorDB[(Qdrant or FAISS)]
+    Dense --> Fusion[Reciprocal Rank Fusion]
+    BM25 --> Fusion
+    Fusion --> Reranker[Cross-encoder reranker]
+    Reranker --> TextResult[Ranked results]
+
+    ImageRoute --> CLIP[CLIP text encoder]
+    CLIP --> ImageIndex[(FAISS: CLIP image vectors)]
+    ImageIndex --> ImageResult[Ranked product images]
+```
+
+The text path runs three retrieval modes behind one API: pure dense
+(embedding similarity), pure BM25 (keyword), and `hybrid` (both run
+concurrently, combined with Reciprocal Rank Fusion, then optionally
+re-ranked by a cross-encoder for the final ordering — this is the default
+mode). The vector index is FAISS locally or Qdrant when running via Docker
+Compose, behind the same interface, so the rest of the pipeline doesn't
+know or care which one is active. The image path is entirely separate: it
+embeds a text query with CLIP into the same vector space as pre-computed
+product image embeddings, so a text description can retrieve photos
+directly.
 
 ## Data
 
