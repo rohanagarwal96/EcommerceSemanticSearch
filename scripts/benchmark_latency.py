@@ -35,7 +35,7 @@ MODES = {
 
 # Only these modes are held to the <200ms p95 bar. hybrid-rerank's cross-encoder
 # pass is inherently the slowest step and is reported without a pass/fail verdict --
-# see docs/superpowers/specs/2026-08-02-phase4b-latency-design.md.
+# see docs/latency_results.md.
 LATENCY_GATED_MODES = ("dense", "bm25", "hybrid")
 
 
