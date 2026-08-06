@@ -95,7 +95,7 @@ flowchart TD
     Reranker --> TextResult[Ranked results]
 
     ImageRoute --> CLIP[CLIP text encoder]
-    CLIP --> ImageIndex[(FAISS: CLIP image vectors)]
+    CLIP --> ImageIndex[(Qdrant or FAISS: CLIP image vectors)]
     ImageIndex --> ImageResult[Ranked product images]
 ```
 
