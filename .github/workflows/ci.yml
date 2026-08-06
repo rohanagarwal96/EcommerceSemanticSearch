@@ -28,7 +28,7 @@ jobs:
 
   test:
     runs-on: ubuntu-latest
-    timeout-minutes: 30
+    timeout-minutes: 90
     steps:
       - uses: actions/checkout@v4
       - uses: actions/setup-python@v5
@@ -48,5 +48,32 @@ jobs:
         run: |
           pip install -r requirements.txt
           pip install -e .
+      - name: Cache build artifacts (FAISS/BM25/CLIP indexes)
+        id: cache-artifacts
+        uses: actions/cache@v4
+        with:
+          path: artifacts
+          key: >-
+            ${{ runner.os }}-artifacts-${{ hashFiles(
+              'data/ecommerce_catalog_enriched.csv',
+              'scripts/build_index.py',
+              'scripts/build_bm25_index.py',
+              'scripts/build_multimodal_index.py',
+              'scripts/download_multimodal_dataset.py',
+              'src/ecomsearch/multimodal/sampling.py'
+            ) }}
+      - name: Set up Kaggle credentials
+        if: steps.cache-artifacts.outputs.cache-hit != 'true'
+        run: |
+          mkdir -p ~/.kaggle
+          echo '{"username":"${{ secrets.KAGGLE_USERNAME }}","key":"${{ secrets.KAGGLE_KEY }}"}' > ~/.kaggle/kaggle.json
+          chmod 600 ~/.kaggle/kaggle.json
+      - name: Build search indexes
+        if: steps.cache-artifacts.outputs.cache-hit != 'true'
+        run: |
+          python scripts/build_index.py
+          python scripts/build_bm25_index.py
+          python scripts/download_multimodal_dataset.py
+          python scripts/build_multimodal_index.py
       - name: Run tests
         run: pytest -v
