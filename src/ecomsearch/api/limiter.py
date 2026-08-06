@@ -1,4 +1,5 @@
 """Shared rate limiter instance for the FastAPI backend."""
+
 from slowapi import Limiter
 from slowapi.util import get_remote_address
 

@@ -1,4 +1,5 @@
 """FastAPI application: serving layer for text and image product search."""
+
 import time
 from contextlib import asynccontextmanager
 
