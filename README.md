@@ -61,7 +61,7 @@ else in this project.
 | Backend | FastAPI (`venv` or Docker Compose) |
 | Frontend | Streamlit (`venv` or Docker Compose) |
 | Deployment | Local Docker Compose (see [Running the App](#running-the-app)) |
-| CI/CD | GitHub Actions (lint + full test suite on every push) |
+| CI/CD | GitHub Actions (lint + full test suite on every push/PR) |
 
 ## Evaluation
 
